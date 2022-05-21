@@ -1,47 +1,23 @@
+use crate::traits::CompliantNumerical;
 ///! Defines a static memory vector struct
 ///! It has a user defined amount of elements
 ///! It is used to implement linear algebra for neural nets and similar
 use std::{
-    ops::{Add, Div, Mul, Sub},
+    ops::{Div, Mul},
     usize,
 };
-
-pub trait VecElement:
-    Sized
-    + Default
-    + Clone
-    + Copy
-    + PartialEq
-    + Add<Output = Self>
-    + Sub<Output = Self>
-    + Mul<Output = Self>
-    + Div<Output = Self>
-{
-}
-impl<T> VecElement for T where
-    T: Sized
-        + Default
-        + Clone
-        + Copy
-        + Add<Output = T>
-        + Sub<Output = T>
-        + Mul<Output = T>
-        + Div<Output = T>
-        + PartialEq
-{
-}
 
 /// Type definition for a vector
 /// It is a fixed size vector
 /// It is used to implement linear algebra for neural nets and similar
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Vec<T: VecElement, const COUNT: usize> {
+pub struct Vec<T: CompliantNumerical, const COUNT: usize> {
     elements: [T; COUNT],
 }
 #[allow(dead_code)]
 // Implements a new method for the generic vector struct
-impl<T: VecElement, const COUNT: usize> Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// Creates a new vector
     pub fn new() -> Vec<T, COUNT> {
         let elements = [T::default(); COUNT];
@@ -74,7 +50,10 @@ impl<T: VecElement, const COUNT: usize> Vec<T, COUNT> {
     }
 
     // Passes every element of the vector to the given function
-    pub fn for_each(&self, f: T) where T: Fn(T) {
+    pub fn for_each(&self, f: T)
+    where
+        T: Fn(T),
+    {
         for element in self.elements.iter() {
             f(*element);
         }
@@ -101,7 +80,7 @@ impl<T: VecElement, const COUNT: usize> Vec<T, COUNT> {
 }
 
 // Multiplies a vector with a scalar
-impl<T: VecElement, const COUNT: usize> Mul<T> for Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Mul<T> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
     fn mul(self, other: T) -> Vec<T, COUNT> {
         let mut ret = Vec::new();
@@ -112,7 +91,7 @@ impl<T: VecElement, const COUNT: usize> Mul<T> for Vec<T, COUNT> {
     }
 }
 // Divides a vector with a scalar
-impl<T: VecElement, const COUNT: usize> Div<T> for Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Div<T> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
     fn div(self, other: T) -> Vec<T, COUNT> {
         let mut ret = Vec::new();
@@ -124,7 +103,7 @@ impl<T: VecElement, const COUNT: usize> Div<T> for Vec<T, COUNT> {
 }
 
 // Implements vector addition
-impl<T: VecElement, const COUNT: usize> std::ops::Add<Vec<T, COUNT>> for Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> std::ops::Add<Vec<T, COUNT>> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
     fn add(self, other: Vec<T, COUNT>) -> Vec<T, COUNT> {
         let mut result = Vec::new();
@@ -136,7 +115,7 @@ impl<T: VecElement, const COUNT: usize> std::ops::Add<Vec<T, COUNT>> for Vec<T, 
 }
 
 // Implements vector subtraction
-impl<T: VecElement, const COUNT: usize> std::ops::Sub<Vec<T, COUNT>> for Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> std::ops::Sub<Vec<T, COUNT>> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
     fn sub(self, other: Vec<T, COUNT>) -> Vec<T, COUNT> {
         let mut result = Vec::new();
@@ -148,7 +127,7 @@ impl<T: VecElement, const COUNT: usize> std::ops::Sub<Vec<T, COUNT>> for Vec<T, 
 }
 
 // Implements vector dotproduct
-impl<T: VecElement, const COUNT: usize> std::ops::Mul<Vec<T, COUNT>> for Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> std::ops::Mul<Vec<T, COUNT>> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
     fn mul(self, other: Vec<T, COUNT>) -> Vec<T, COUNT> {
         let mut result = Vec::new();

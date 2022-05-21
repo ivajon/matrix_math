@@ -2,20 +2,19 @@
 ///! It is a fixed size matrix, with a user defined amount of rows and columns
 ///! It allows for anny type that supports the VecElement trait
 ///! It is used to implement linear algebra for neural nets and similar
-use debug_print::{debug_eprint, debug_eprintln, debug_print, debug_println};
 use std::{
     ops::{self},
     usize,
 };
 
-use crate::vec::VecElement;
+use crate::traits::CompliantNumerical;
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
-struct Matrix<T: VecElement, const ROWS: usize, const COLS: usize> {
+pub struct Matrix<T: CompliantNumerical, const ROWS: usize, const COLS: usize> {
     elements: [[T; COLS]; ROWS],
 }
 #[allow(dead_code)]
-impl<T: VecElement, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> {
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> {
     pub fn new() -> Matrix<T, ROWS, COLS> {
         let elements = [[T::default(); COLS]; ROWS];
         Matrix { elements }
@@ -45,7 +44,7 @@ impl<T: VecElement, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> 
 }
 #[allow(dead_code)]
 /// Defines a add method for the generic matrix struct
-impl<T: VecElement, const ROWS: usize, const COLS: usize> ops::Add<Matrix<T, ROWS, COLS>>
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> ops::Add<Matrix<T, ROWS, COLS>>
     for Matrix<T, ROWS, COLS>
 {
     type Output = Matrix<T, ROWS, COLS>;
@@ -61,7 +60,7 @@ impl<T: VecElement, const ROWS: usize, const COLS: usize> ops::Add<Matrix<T, ROW
 }
 #[allow(dead_code)]
 /// Defines a sub method for the generic matrix struct
-impl<T: VecElement, const ROWS: usize, const COLS: usize> ops::Sub<Matrix<T, ROWS, COLS>>
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> ops::Sub<Matrix<T, ROWS, COLS>>
     for Matrix<T, ROWS, COLS>
 {
     type Output = Matrix<T, ROWS, COLS>;
@@ -78,7 +77,9 @@ impl<T: VecElement, const ROWS: usize, const COLS: usize> ops::Sub<Matrix<T, ROW
 #[allow(dead_code)]
 /// Defines a mul method for the generic matrix struct
 /// This is the implementation for the multiplication of a matrix with a scalar
-impl<T: VecElement, const ROWS: usize, const COLS: usize> ops::Mul<T> for Matrix<T, ROWS, COLS> {
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> ops::Mul<T>
+    for Matrix<T, ROWS, COLS>
+{
     type Output = Matrix<T, ROWS, COLS>;
     fn mul(self, other: T) -> Matrix<T, ROWS, COLS> {
         let mut result = Matrix::new();
@@ -148,9 +149,7 @@ mod tests {
     fn test_matrix_transpose() {
         let data = [[1, 2, 3]; 3];
         let mut m = Matrix::new_from_data(data);
-        debug_println!("Matrix before transpose : {:?}", m);
         m = m.transpose();
-        debug_println!("Matrix after transpose : {:?}", m);
 
         assert_eq!(m.get(0, 0), &1);
         assert_eq!(m.get(1, 0), &2);
