@@ -5,7 +5,8 @@
 
 ## What is this?
 
-This is my matrix math library.
+This is my matrix math library, it is at worst linear memory and hopefully constant memory for everything that does not need instantion of temporary variables. It is also written to allocate memory at compile time and not use dynamic memory allocation. This is done to optimize it for embedded systems and neural networks where we know the size of each layer, it is not good for neat tho, that would require a lot of re allocating memory.
+
 I intend to use it for some hobby projects, mostly for neural networks.
 
 ## How it works
