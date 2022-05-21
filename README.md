@@ -1,5 +1,5 @@
 # matrix_math
-
+[![run_tests](https://github.com/ivario123/matrix_math/actions/workflows/run_tests.yml/badge.svg)](https://github.com/ivario123/matrix_math/actions/workflows/run_tests.yml)
 ## What is this?
 
 This is my matrix math library.
