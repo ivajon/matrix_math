@@ -1,0 +1,1 @@
+/mnt/c/Users/ivarj/Documents/git/rust_chess/matrix_math/target/debug/matrix_math: /mnt/c/Users/ivarj/Documents/git/rust_chess/matrix_math/src/main.rs /mnt/c/Users/ivarj/Documents/git/rust_chess/matrix_math/src/vec.rs
