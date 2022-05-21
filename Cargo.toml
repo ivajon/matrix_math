@@ -1,6 +1,6 @@
 [package]
 author="Ivar Jönsson"
-name = "matrix_math"
+name = "matrus"
 version = "0.1.0"
 edition = "2021"
 
