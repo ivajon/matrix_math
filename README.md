@@ -1,4 +1,5 @@
 # matrix_math
+[![build](https://github.com/ivario123/matrix_math/actions/workflows/build.yml/badge.svg)](https://github.com/ivario123/matrix_math/actions/workflows/build.yml)
 [![run_tests](https://github.com/ivario123/matrix_math/actions/workflows/run_tests.yml/badge.svg)](https://github.com/ivario123/matrix_math/actions/workflows/run_tests.yml)
 ## What is this?
 
