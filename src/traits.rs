@@ -9,6 +9,7 @@
 //! This trait allows the end user to just pass in values of any numerical type, and the library will ensure that
 //! the values are valid for the library.
 
+
 use std::cmp::PartialOrd;
 use std::ops::{Add, Div, Mul, Sub};
 /// Defines a compliant numerical trait
