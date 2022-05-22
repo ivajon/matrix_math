@@ -1,0 +1,1 @@
+initSidebarItems({"trait":[["CompliantNumerical","Defines a compliant numerical trait It is used as a generic to only allow numbers that can be casted to/ from floats and integers This trait is used to ensure that the matrix struct can only be used with numbers"]]});

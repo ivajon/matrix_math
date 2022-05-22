@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Vec","Type definition for a vector It is a fixed size vector It is used to implement linear algebra for neural nets and similar"]]});
