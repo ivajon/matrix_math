@@ -1,6 +1,6 @@
 [package]
 author="Ivar Jönsson"
-name = "mars"
+name = "matrs"
 version = "0.1.0"
 edition = "2021"
 [lib]
