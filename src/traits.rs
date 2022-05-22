@@ -1,6 +1,20 @@
+//! This defines what type of variables are valid for the library, this is used to ensure that the library
+//! is not used with any other types.
+//! # What is this?
+//! This is a trait that is used to ensure that the library is not used with any other types.
+//! # Future work
+//! This trait is currently in a very early stage of development, I would ideally not use this trait and just set the
+//! trait to be all numbers, but I haven't gotten that to work yet
+//! # Why is this trait needed?
+//! This trait allows the end user to just pass in values of any numerical type, and the library will ensure that
+//! the values are valid for the library.
 
 use std::cmp::PartialOrd;
 use std::ops::{Add, Div, Mul, Sub};
+/// Defines a compliant numerical trait
+/// It is used as a generic to only allow numbers that can be casted to/ from floats
+/// and integers
+/// This trait is used to ensure that the matrix struct can only be used with numbers
 pub trait CompliantNumerical:
     Sized
     + Default

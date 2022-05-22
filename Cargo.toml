@@ -1,10 +1,10 @@
 [package]
 author="Ivar Jönsson"
-name = "matrus"
+name = "mars"
 version = "0.1.0"
 edition = "2021"
 [lib]
-name = "matrus"
+name = "matrs"
 path = "src/mod.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
