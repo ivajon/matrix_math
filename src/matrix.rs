@@ -17,7 +17,7 @@
 //! let m3 = m1 + m2;
 //! ```
 use std::{
-    ops::{self},
+    ops::{self, Index},
     usize,
 };
 
@@ -71,6 +71,21 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
     pub fn get_elements(&self) -> &[[T; COLS]; ROWS] {
         &self.elements
     }
+    /// Returns the number of rows in the matrix
+    /// # Note
+    /// This is a constant, so it can be used in a const context
+    #[allow(unstable_features)]
+    #[inline(always)]
+    pub fn rows() -> usize {
+        ROWS
+    }
+    /// Returns the number of columns in the matrix
+    /// # Note
+    /// This should be const, but since we can't use const generics, we have to use usize
+    #[inline(always)]
+    pub fn cols() -> usize {
+        COLS
+    }
     /// Sets the value of a given element in the matrix
     pub fn set(&mut self, row: usize, col: usize, value: T) {
         self.elements[row][col] = value;
@@ -88,7 +103,7 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
 
     pub fn set_elements(&mut self, data: [[T; COLS]; ROWS]) {
         self.elements = data.clone();
-    }   
+    }
 
     /// Transposes a given matrix, since we can't assume the matrix to be square, this function takes O(n) memory
     /// and takes O(n^2) time to transpose a matrix, if the matrix is square this could be done in O(1) memory and theta(n^2 / 2) time, which is similar but better
@@ -98,6 +113,25 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         for row in 0..ROWS {
             for col in 0..COLS {
                 m.set(col, row, self.elements[row][col].clone());
+            }
+        }
+        m
+    }
+    /// Passes every element of the matrix to a function defined as
+    /// ```rust
+    /// fn f(x: f64) -> f64 {
+    ///     x.exp()
+    /// }
+    /// ```
+
+    pub fn map<F>(&self, f: F) -> Matrix<T, ROWS, COLS>
+    where
+        F: Fn(T) -> T,
+    {
+        let mut m = Matrix::<T, ROWS, COLS>::new();
+        for row in 0..ROWS {
+            for col in 0..COLS {
+                m.set(row, col, f(self.elements[row][col].clone()));
             }
         }
         m
@@ -271,6 +305,7 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> ops::M
         result
     }
 }
+
 // Multiplying an integer matrix with a float matrix is nonsensical, so it is not implemented
 // If you want to do that first convert the integer matrix to a float matrix
 impl<T: CompliantNumerical, const ROWS: usize, const OWN_COLS: usize, const OTHERS_COLS: usize>
@@ -296,6 +331,33 @@ impl<T: CompliantNumerical, const ROWS: usize, const OWN_COLS: usize, const OTHE
             }
         }
         result
+    }
+}
+
+/// Allows for array like access to the matrix
+/// # Example
+/// ```rust
+/// use matrs::matrix::Matrix;
+/// let m = Matrix::<f32, 2, 2>::new();
+/// let point = m[(0, 1)];
+/// ```
+/// # Output
+/// ```text
+/// 0.0
+/// ```
+/// # Panics
+/// This method never panics
+/// # Safety
+/// This method is safe
+/// # Performance
+/// This method is O(1) time and O(1) memory
+
+impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Index<(usize, usize)>
+    for Matrix<T, ROWS, COLS>
+{
+    type Output = T;
+    fn index(&self, index: (usize, usize)) -> &T {
+        &self.get(index.0, index.1)
     }
 }
 
