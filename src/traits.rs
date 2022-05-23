@@ -9,7 +9,6 @@
 //! This trait allows the end user to just pass in values of any numerical type, and the library will ensure that
 //! the values are valid for the library.
 
-
 use std::cmp::PartialOrd;
 use std::ops::{Add, Div, Mul, Sub};
 /// Defines a compliant numerical trait
@@ -38,6 +37,16 @@ pub trait CompliantNumerical:
     fn into_u16(self) -> u16;
     fn into_u32(self) -> u32;
     fn into_u64(self) -> u64;
+    fn from_f64(f: f64) -> Self;
+    fn from_f32(f: f32) -> Self;
+    fn from_i8(i: i8) -> Self;
+    fn from_i16(i: i16) -> Self;
+    fn from_i32(i: i32) -> Self;
+    fn from_i64(i: i64) -> Self;
+    fn from_u8(i: u8) -> Self;
+    fn from_u16(i: u16) -> Self;
+    fn from_u32(i: u32) -> Self;
+    fn from_u64(i: u64) -> Self;
 }
 impl CompliantNumerical for f64 {
     fn into_f64(self) -> f64 {
@@ -69,6 +78,36 @@ impl CompliantNumerical for f64 {
     }
     fn into_u64(self) -> u64 {
         self as u64
+    }
+    fn from_f64(f: f64) -> Self {
+        f
+    }
+    fn from_f32(f: f32) -> Self {
+        f as f64
+    }
+    fn from_i8(i: i8) -> Self {
+        i as f64
+    }
+    fn from_i16(i: i16) -> Self {
+        i as f64
+    }
+    fn from_i32(i: i32) -> Self {
+        i as f64
+    }
+    fn from_i64(i: i64) -> Self {
+        i as f64
+    }
+    fn from_u8(i: u8) -> Self {
+        i as f64
+    }
+    fn from_u16(i: u16) -> Self {
+        i as f64
+    }
+    fn from_u32(i: u32) -> Self {
+        i as f64
+    }
+    fn from_u64(i: u64) -> Self {
+        i as f64
     }
 }
 impl CompliantNumerical for f32 {
@@ -102,6 +141,36 @@ impl CompliantNumerical for f32 {
     fn into_u64(self) -> u64 {
         self as u64
     }
+    fn from_f64(f: f64) -> Self {
+        f as f32
+    }
+    fn from_f32(f: f32) -> Self {
+        f
+    }
+    fn from_i8(i: i8) -> Self {
+        i as f32
+    }
+    fn from_i16(i: i16) -> Self {
+        i as f32
+    }
+    fn from_i32(i: i32) -> Self {
+        i as f32
+    }
+    fn from_i64(i: i64) -> Self {
+        i as f32
+    }
+    fn from_u8(i: u8) -> Self {
+        i as f32
+    }
+    fn from_u16(i: u16) -> Self {
+        i as f32
+    }
+    fn from_u32(i: u32) -> Self {
+        i as f32
+    }
+    fn from_u64(i: u64) -> Self {
+        i as f32
+    }
 }
 impl CompliantNumerical for i32 {
     fn into_f64(self) -> f64 {
@@ -133,6 +202,36 @@ impl CompliantNumerical for i32 {
     }
     fn into_u64(self) -> u64 {
         self as u64
+    }
+    fn from_f64(f: f64) -> Self {
+        f as i32
+    }
+    fn from_f32(f: f32) -> Self {
+        f as i32
+    }
+    fn from_i8(i: i8) -> Self {
+        i as i32
+    }
+    fn from_i16(i: i16) -> Self {
+        i as i32
+    }
+    fn from_i32(i: i32) -> Self {
+        i
+    }
+    fn from_i64(i: i64) -> Self {
+        i as i32
+    }
+    fn from_u8(i: u8) -> Self {
+        i as i32
+    }
+    fn from_u16(i: u16) -> Self {
+        i as i32
+    }
+    fn from_u32(i: u32) -> Self {
+        i as i32
+    }
+    fn from_u64(i: u64) -> Self {
+        i as i32
     }
 }
 impl CompliantNumerical for i64 {
@@ -166,6 +265,36 @@ impl CompliantNumerical for i64 {
     fn into_u64(self) -> u64 {
         self as u64
     }
+    fn from_f64(f: f64) -> Self {
+        f as i64
+    }
+    fn from_f32(f: f32) -> Self {
+        f as i64
+    }
+    fn from_i8(i: i8) -> Self {
+        i as i64
+    }
+    fn from_i16(i: i16) -> Self {
+        i as i64
+    }
+    fn from_i32(i: i32) -> Self {
+        i as i64
+    }
+    fn from_i64(i: i64) -> Self {
+        i
+    }
+    fn from_u8(i: u8) -> Self {
+        i as i64
+    }
+    fn from_u16(i: u16) -> Self {
+        i as i64
+    }
+    fn from_u32(i: u32) -> Self {
+        i as i64
+    }
+    fn from_u64(i: u64) -> Self {
+        i as i64
+    }
 }
 impl CompliantNumerical for u8 {
     fn into_f64(self) -> f64 {
@@ -198,6 +327,36 @@ impl CompliantNumerical for u8 {
     fn into_u64(self) -> u64 {
         self as u64
     }
+    fn from_f64(f: f64) -> Self {
+        f as u8
+    }
+    fn from_f32(f: f32) -> Self {
+        f as u8
+    }
+    fn from_i8(i: i8) -> Self {
+        i as u8
+    }
+    fn from_i16(i: i16) -> Self {
+        i as u8
+    }
+    fn from_i32(i: i32) -> Self {
+        i as u8
+    }
+    fn from_i64(i: i64) -> Self {
+        i as u8
+    }
+    fn from_u8(i: u8) -> Self {
+        i
+    }
+    fn from_u16(i: u16) -> Self {
+        i as u8
+    }
+    fn from_u32(i: u32) -> Self {
+        i as u8
+    }
+    fn from_u64(i: u64) -> Self {
+        i as u8
+    }
 }
 impl CompliantNumerical for u16 {
     fn into_f64(self) -> f64 {
@@ -229,6 +388,36 @@ impl CompliantNumerical for u16 {
     }
     fn into_u64(self) -> u64 {
         self as u64
+    }
+    fn from_f64(f: f64) -> Self {
+        f as u16
+    }
+    fn from_f32(f: f32) -> Self {
+        f as u16
+    }
+    fn from_i8(i: i8) -> Self {
+        i as u16
+    }
+    fn from_i16(i: i16) -> Self {
+        i as u16
+    }
+    fn from_i32(i: i32) -> Self {
+        i as u16
+    }
+    fn from_i64(i: i64) -> Self {
+        i as u16
+    }
+    fn from_u8(i: u8) -> Self {
+        i as u16
+    }
+    fn from_u16(i: u16) -> Self {
+        i
+    }
+    fn from_u32(i: u32) -> Self {
+        i as u16
+    }
+    fn from_u64(i: u64) -> Self {
+        i as u16
     }
 }
 impl CompliantNumerical for u32 {
@@ -264,6 +453,37 @@ impl CompliantNumerical for u32 {
     fn into_u64(self) -> u64 {
         self as u64
     }
+    fn from_f64(f: f64) -> Self {
+        f as u32
+    }
+    fn from_f32(f: f32) -> Self {
+        f as u32
+    }
+    fn from_i8(i: i8) -> Self {
+        i as u32
+    }
+    fn from_i16(i: i16) -> Self {
+        i as u32
+    }
+    fn from_i32(i: i32) -> Self {
+        i as u32
+    }
+    fn from_i64(i: i64) -> Self {
+        i as u32
+    }
+    fn from_u8(i: u8) -> Self {
+        i as u32
+    }
+    fn from_u16(i: u16) -> Self {
+        i as u32
+    }
+    fn from_u64(i: u64) -> Self {
+        i as u32
+    }
+
+    fn from_u32(i: u32) -> Self {
+        i
+    }
 }
 impl CompliantNumerical for u64 {
     fn into_f64(self) -> f64 {
@@ -296,4 +516,36 @@ impl CompliantNumerical for u64 {
     fn into_u64(self) -> u64 {
         self
     }
+    fn from_f64(f: f64) -> Self {
+        f as u64
+    }
+    fn from_f32(f: f32) -> Self {
+        f as u64
+    }
+    fn from_i8(i: i8) -> Self {
+        i as u64
+    }
+    fn from_i16(i: i16) -> Self {
+        i as u64
+    }
+    fn from_i32(i: i32) -> Self {
+        i as u64
+    }
+    fn from_i64(i: i64) -> Self {
+        i as u64
+    }
+    fn from_u8(i: u8) -> Self {
+        i as u64
+    }
+    fn from_u16(i: u16) -> Self {
+        i as u64
+    }
+    fn from_u32(i: u32) -> Self {
+        i as u64
+    }
+
+    fn from_u64(i: u64) -> Self {
+        i
+    }
+    
 }
