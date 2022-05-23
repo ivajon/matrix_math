@@ -27,6 +27,10 @@ use crate::traits::{self, CompliantNumerical};
 pub struct Matrix<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> {
     elements: [[T; COLS]; ROWS],
 }
+pub type Matrix2x2<T> = Matrix<T, 2, 2>;
+pub type Matrix3x3<T> = Matrix<T, 3, 3>;
+pub type Matrix4x4<T> = Matrix<T, 4, 4>;
+
 #[allow(dead_code)]
 impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> {
     /// Creates a new matrix of the specified size
@@ -47,10 +51,45 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
     pub fn get_mut(&mut self, row: usize, col: usize) -> &mut T {
         &mut self.elements[row][col]
     }
+    /// Returns the entire elements array
+    /// This is useful for when you want to do something with the entire matrix
+    /// without having to use the get and set functions
+    /// # Example
+    /// ```rust
+    /// use matrs::matrix::Matrix;
+    /// let m = Matrix::<f32, 2, 2>::new();
+    /// let elements = m.get_elements();
+    /// ```
+    /// # Example
+    /// ```rust
+    /// use matrs::matrix::Matrix;
+    /// let mut m = Matrix::<f32, 2, 2>::new();
+    /// m.set_elements([[1.0, 2.0], [3.0, 4.0]]);
+    /// let mut elements = m.get_elements();
+    /// assert_eq!(*elements, [[1.0, 2.0], [3.0, 4.0]]);
+    /// ```
+    pub fn get_elements(&self) -> &[[T; COLS]; ROWS] {
+        &self.elements
+    }
     /// Sets the value of a given element in the matrix
     pub fn set(&mut self, row: usize, col: usize, value: T) {
         self.elements[row][col] = value;
     }
+
+    /// Sets the entire elements array
+    /// This is useful for when you want to do something with the entire matrix
+    /// without having to use the get and set functions
+    /// # Example
+    /// ```rust
+    /// use matrs::matrix::Matrix;
+    /// let mut m = Matrix::<f32, 2, 2>::new();
+    /// m.set_elements([[1.0, 2.0], [3.0, 4.0]]);
+    /// ```
+
+    pub fn set_elements(&mut self, data: [[T; COLS]; ROWS]) {
+        self.elements = data.clone();
+    }   
+
     /// Transposes a given matrix, since we can't assume the matrix to be square, this function takes O(n) memory
     /// and takes O(n^2) time to transpose a matrix, if the matrix is square this could be done in O(1) memory and theta(n^2 / 2) time, which is similar but better
     pub fn transpose(&mut self) -> Matrix<T, COLS, ROWS> {
@@ -102,13 +141,29 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
     /// use matrs::matrix::Matrix;
     /// let m = Matrix::<i32, 2, 2>::new();
     /// let mf = m.to_f64();
+    /// assert_eq!(*mf.get_elements(), [[0.0, 0.0], [0.0, 0.0]]);
+    ///
     /// ```
     /// # Output
     /// ```text
     /// Matrix([[0.0, 0.0],
     ///       [0.0, 0.0]])
     /// ```
-
+    /// # Safety
+    /// This function is safe since it is only used to convert integer matrices to float64 matrices
+    /// # Panics
+    /// This function will never panic
+    /// # Examples
+    /// ```rust
+    /// use matrs::matrix::Matrix;
+    /// let m = Matrix::<i32, 2, 2>::new();
+    /// let mf = m.to_f64();
+    /// ```
+    /// # Output
+    /// ```text
+    /// Matrix([[0.0, 0.0],
+    ///      [0.0, 0.0]])
+    /// ```
     pub fn to_f64(&self) -> Matrix<f64, ROWS, COLS> {
         let mut m = Matrix::<f64, ROWS, COLS>::new();
         for row in 0..ROWS {

@@ -1,4 +1,4 @@
-//! A vector is of n elements, and is stored in a contiguous block of memory.
+//! A Vector is of n elements, and is stored in a contiguous block of memory.
 //!
 //! # Supported operations:
 //!
@@ -28,12 +28,12 @@ use std::{
     usize,
 };
 
-/// Type definition for a vector
-/// It is a fixed size vector
+/// Type definition for a Vector
+/// It is a fixed size Vector
 /// It is used to implement linear algebra for neural nets and similar
 /// # Benefits
-/// * It is a fixed size vector
-/// * It gaurantees that the vector to vector operations are of correct size
+/// * It is a fixed size Vector
+/// * It gaurantees that the Vector to Vector operations are of correct size
 ///
 /// # Example
 /// ```rust
@@ -48,37 +48,40 @@ use std::{
 pub struct Vec<T: traits::CompliantNumerical, const COUNT: usize> {
     elements: [T; COUNT],
 }
+pub type Vec2<T> = Vec<T, 2>;
+pub type Vec3<T> = Vec<T, 3>;
+pub type Vec4<T> = Vec<T, 4>;
 #[allow(dead_code)]
-// Implements a new method for the generic vector struct
+// Implements a new method for the generic Vector struct
 impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
-    /// Creates a new vector
-    /// It is used to create a new vector with a user defined amount of elements
+    /// Creates a new Vector
+    /// It is used to create a new Vector with a user defined amount of elements
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let vec = Vec::< f64, 3 >::new();
+    /// let Vec = Vec::< f64, 3 >::new();
     /// ```
     /// # Panics
     /// Never panics
     /// # Safety
-    /// It is safe to create a new vector
+    /// It is safe to create a new Vector
     pub fn new() -> Vec<T, COUNT> {
         let elements = [T::default(); COUNT];
         Vec { elements }
     }
 
-    /// Creates a new vector
-    /// It is used to create a new vector with a user defined amount of elements
+    /// Creates a new Vector
+    /// It is used to create a new Vector with a user defined amount of elements
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
     /// let data:[f32;3] = [1.0, 2.0, 3.0];
-    /// let vec = Vec::new_from_data(data);
+    /// let Vec = Vec::new_from_data(data);
     /// ```
     /// # Panics
     /// Never panics
     /// # Safety
-    /// It is safe to create a new vector
+    /// It is safe to create a new Vector
     pub fn new_from_data(data: [T; COUNT]) -> Vec<T, COUNT> {
         Vec { elements: data }
     }
@@ -86,13 +89,13 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let vec = Vec::< f64, 3 >::new();
-    /// let element = vec.get(1);
+    /// let Vec = Vec::< f64, 3 >::new();
+    /// let element = Vec.get(1);
     /// ```
     /// # Panics
     /// On index out of bounds
     /// # Safety
-    /// It is safe if the index is within the bounds of the vector
+    /// It is safe if the index is within the bounds of the Vector
     pub fn get(&self, index: usize) -> &T {
         &self.elements[index]
     }
@@ -100,14 +103,14 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let mut vec = Vec::< f64, 3 >::new();
-    /// vec.set(1, 1.0);
-    /// let mut element = vec.get(1);
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// Vec.set(1, 1.0);
+    /// let mut element = Vec.get(1);
     /// ```
     /// # Panics
     /// On index out of bounds
     /// # Safety
-    /// It is safe if the index is within the bounds of the vector
+    /// It is safe if the index is within the bounds of the Vector
     pub fn get_mut(&mut self, index: usize) -> &mut T {
         &mut self.elements[index]
     }
@@ -115,71 +118,71 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let mut vec = Vec::< f64, 3 >::new();
-    /// vec.set(1, 1.0);
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// Vec.set(1, 1.0);
     /// ```
     /// # Panics
     /// On index out of bounds
     /// # Safety
-    /// It is safe if the index is within the bounds of the vector
+    /// It is safe if the index is within the bounds of the Vector
     pub fn set(&mut self, index: usize, value: T) {
         self.elements[index] = value;
     }
-    /// Gets the length of the vector
+    /// Gets the length of the Vector
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let vec = Vec::< f64, 3 >::new();
-    /// let length = vec.len();
+    /// let Vec = Vec::< f64, 3 >::new();
+    /// let length = Vec.len();
     /// ```
     /// # Panics
     /// Never panics
     /// # Safety
-    /// It is safe to get the length of the vector
+    /// It is safe to get the length of the Vector
     /// # Note
-    /// The length of the vector is always the same as the amount of elements
-    /// in the vector
+    /// The length of the Vector is always the same as the amount of elements
+    /// in the Vector
     pub fn len(&self) -> usize {
         COUNT
     }
-    /// Convert the vector to a slice
+    /// Convert the Vector to a slice
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let mut vec = Vec::< f64, 3 >::new();
-    /// let slice = vec.iter();
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// let slice = Vec.iter();
     /// ```
     /// # Panics
     /// Never panics
     /// # Safety
-    /// It is safe to convert the vector to a slice
+    /// It is safe to convert the Vector to a slice
     pub fn iter(&self) -> std::slice::Iter<T> {
         self.elements.iter()
     }
-    /// Convert the vector to a slice
+    /// Convert the Vector to a slice
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
-    /// let mut vec = Vec::< f64, 3 >::new();
-    /// let slice = vec.iter_mut();
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// let slice = Vec.iter_mut();
     /// ```
     /// # Panics
     /// Never panics
     /// # Safety
-    /// It is safe to convert the vector to a slice
+    /// It is safe to convert the Vector to a slice
     pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
         self.elements.iter_mut()
     }
-    /// Passes each element of the vector to the function
+    /// Passes each element of the Vector to the function
     pub fn for_each(&self, f: T)
     where
-        T: Fn(T)->T,
+        T: Fn(T) -> T,
     {
         for element in self.elements.iter() {
             f(*element);
         }
     }
-    fn cross_mult(self, other: Vec<T, COUNT>, ret: &mut Vec<T, COUNT>) {
+    pub fn cross_mult(&self, other: Vec<T, COUNT>, ret: &mut Vec<T, COUNT>) {
         if COUNT == 3 {
             ret.set(
                 0,
@@ -198,9 +201,99 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
             );
         }
     }
+    /// Mutliplies two vectors element by element, and returns the result in the vector ret
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// let mut other = Vec::< f64, 3 >::new();
+    /// let mut ret = Vec::< f64, 3 >::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// other.set(0, 4.0);
+    /// other.set(1, 5.0);
+    /// other.set(2, 6.0);
+    /// Vec.element_wise_mult(other, &mut ret);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to multiply two vectors
+    /// # Note
+    /// The length of the Vector is always the same as the amount of elements
+    pub fn element_wise_mult(&self, other: Vec<T, COUNT>, ret: &mut Vec<T, COUNT>) {
+        for i in 0..COUNT {
+            ret.set(i, self.get(i).clone() * other.get(i).clone());
+        }
+    }
+    /// Divides two vectors element by element, and returns the result in the vector ret
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// let mut other = Vec::< f64, 3 >::new();
+    /// let mut ret = Vec::< f64, 3 >::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// other.set(0, 4.0);
+    /// other.set(1, 5.0);
+    /// other.set(2, 6.0);
+    /// Vec.element_wise_div(other, &mut ret);
+    /// ```
+    /// # Panics
+    /// Panics if element of other is 0
+    /// # Safety
+    /// It is not safe to divide two vectors since it's possible to divide by 0
+    /// # Note
+    /// The length of the Vector is always the same as the amount of elements
+    pub fn element_wise_div(&self, other: Vec<T, COUNT>, ret: &mut Vec<T, COUNT>) {
+        for i in 0..COUNT {
+            ret.set(i, self.get(i).clone() / other.get(i).clone());
+        }
+    }
+    /// Converts an integer vector to a f32 vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut a = Vec::< i32, 3 >::new();
+    /// let mut b = Vec::< f32, 3 >::new();
+    /// a.to_f32(&mut b);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to convert an integer vector to a f32 vector
+
+    pub fn to_f32(&self, ret: &mut Vec<f32, COUNT>) {
+        for i in 0..COUNT {
+            ret.set(i, self.get(i).clone().into_f32());
+        }
+    }
+    /// Converts an integer vector to a f64 vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut a = Vec::< i32, 3 >::new();
+    /// let mut b = Vec::< f64, 3 >::new();
+    /// a.to_f64(&mut b);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to convert an integer vector to a f64 vector
+    /// # Note
+    /// The length of the Vector is always the same as the amount of elements
+
+    pub fn to_f64(&self, ret: &mut Vec<f64, COUNT>) {
+        for i in 0..COUNT {
+            ret.set(i, self.get(i).clone().into_f64());
+        }
+    }
 }
 
-// Multiplies a vector with a scalar
+// Multiplies a Vector with a scalar
 impl<T: traits::CompliantNumerical, const COUNT: usize> Mul<T> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
     fn mul(self, other: T) -> Vec<T, COUNT> {
@@ -211,10 +304,10 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Mul<T> for Vec<T, COUNT>
         ret
     }
 }
-// Divides a vector with a scalar
+// Divides a Vector with a scalar
 impl<T: traits::CompliantNumerical, const COUNT: usize> Div<T> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
-    /// Divides a vector with a scalar
+    /// Divides a Vector with a scalar
     /// # Panics
     /// Panics if the divisor is 0
     /// # Safety
@@ -231,14 +324,14 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Div<T> for Vec<T, COUNT>
     }
 }
 
-// Implements vector addition
+// Implements Vector addition
 impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Add<Vec<T, COUNT>>
     for Vec<T, COUNT>
 {
     type Output = Vec<T, COUNT>;
-    /// This function adds two vectors
-    /// Since vectors are allocated at compile time this implmenetation gauraantees that the
-    /// resulting vector has the same size as the first vector
+    /// This function adds two Vectors
+    /// Since Vectors are allocated at compile time this implmenetation gauraantees that the
+    /// resulting Vector has the same size as the first Vector
     /// # Example
     /// ```rust
     /// use matrs::vec::Vec;
@@ -263,7 +356,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Add<Vec<T, COU
     }
 }
 
-// Implements vector subtraction
+// Implements Vector subtraction
 impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Sub<Vec<T, COUNT>>
     for Vec<T, COUNT>
 {
@@ -277,7 +370,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Sub<Vec<T, COU
     }
 }
 
-// Implements vector dotproduct
+// Implements Vector dotproduct
 impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Mul<Vec<T, COUNT>>
     for Vec<T, COUNT>
 {
@@ -295,7 +388,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Mul<Vec<T, COU
 mod tests {
     use super::*;
     #[test]
-    fn test_vec_add() {
+    fn test_Vec_add() {
         let a = Vec::new_from_data([1.0, 2.0, 3.0]);
         let b = Vec::new_from_data([4.0, 5.0, 6.0]);
         let c = a + b;
@@ -304,7 +397,7 @@ mod tests {
         assert_eq!(*c.get(2), 9.0, "Add did not work. Wrong value at index 2");
     }
     #[test]
-    fn test_vec_sub() {
+    fn test_Vec_sub() {
         let a = Vec::new_from_data([1.0, 2.0, 3.0]);
         let b = Vec::new_from_data([4.0, 5.0, 6.0]);
         let c = a - b;
@@ -334,7 +427,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_vec_mul() {
+    fn test_Vec_mul() {
         let a = Vec::new_from_data([1.0, 2.0, 3.0]);
         let b = Vec::new_from_data([4.0, 5.0, 6.0]);
         let c = a * b;
@@ -364,7 +457,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_vec_div() {
+    fn test_Vec_div() {
         let a = Vec::new_from_data([1.0, 2.0, 3.0]);
         let b = 2.0;
         let c = a / b;
@@ -394,7 +487,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_vec_cross_mult() {
+    fn test_Vec_cross_mult() {
         let a = Vec::new_from_data([1.0, 2.0, 3.0]);
         let b = Vec::new_from_data([4.0, 5.0, 6.0]);
         let mut c = Vec::new_from_data([0.0, 0.0, 0.0]);
@@ -425,7 +518,7 @@ mod tests {
         );
     }
     #[test]
-    fn test_vec_dot_mult() {
+    fn test_Vec_dot_mult() {
         let a = Vec::new_from_data([1.0, 2.0, 3.0]);
         let b = Vec::new_from_data([4.0, 5.0, 6.0]);
         let c = a * b;
