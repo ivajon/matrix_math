@@ -4,7 +4,9 @@ name = "matrs"
 version = "0.1.0"
 edition = "2021"
 description = "A package for creating and manipulating matrices and vectors"
-
+license="MIT"
+documentation = "https://ivario123.github.io/matrix_math/"
+repourl = "https://github.com/ivario123/matrix_math"
 
 [lib]
 name = "matrs"
