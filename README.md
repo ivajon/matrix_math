@@ -9,7 +9,7 @@ This is my matrix math library, it is at worst linear memory and hopefully const
 
 # So you want to use this in your project?
 
-Just add this line to your project ( it's not one crates.io )
+Just add this line to your cargo.toml ( it's not on crates.io )
 
 ```Toml
 matrs = {git="https://github.com/ivario123/matrix_math", version = "0.1.0"}
