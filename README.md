@@ -57,7 +57,7 @@ Read through the [docs](https://ivario123.github.io/matrix_math/) for more infor
 
     // Using function api to get the size
     assert_eq!(M.size(), (2, 2));
-    assert_eq!(V.len(), 2);
+    assert_eq!(V.size(), 2);
 
 
 ```
@@ -87,4 +87,4 @@ And it is free to use. For more info please see the [license](/LICENSE.md)
 ## Contributing
 
 Before contributing please read the entire [docs](https://ivario123.github.io/matrix_math/) to make sure you understand what the goal of the project is.
-Also read the [contributing guide](.github/CONTRIBUTING.md), then if you have any questions please ask on the [github issues](github.com/ivario123/matrix_math/issues). Finally when you have anny code to submit feel free to fork the repo and submit a pull request.
+Also read the [contributing guide](.github/CONTRIBUTING.md), then if you have any questions please ask on the [github issues]([github.com/ivario123/matrix_math/issues](https://github.com/ivario123/matrix_math/issues)). Finally when you have anny code to submit feel free to fork the repo and submit a pull request.

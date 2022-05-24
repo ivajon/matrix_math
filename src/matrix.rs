@@ -5,10 +5,10 @@
 //! It also allocates memory statically at compile time, this is a huge advantage over dynamic
 //! memory allocation.
 //!
+//!
 //! # Why should I use this?
 //! This library is specifically designed to work on low memory devices, such as embedded systems,
 //! but since it is designed that way, it should also perform well on high memory devices.
-//!
 //! # How do I use this?
 //! ```rust
 //! use matrs::matrix::Matrix;
@@ -24,11 +24,33 @@ use std::{
 use crate::traits::{self, CompliantNumerical};
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
+/// # Matrix
+/// This is a generic matrix struct, it is used to represent a matrix of any numeric type,
+/// it is generic in the type of the matrix, and it is generic in the number of rows and columns
+/// of the matrix.
+///
+/// # How do I use this?
+/// ```rust
+/// use matrs::matrix::Matrix;
+/// let m1 = Matrix::<f32, 2, 2>::new();
+/// let m2 = Matrix::<f32, 2, 2>::new();
+/// let m3 = m1 * m2;
+/// ```
+///
 pub struct Matrix<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> {
+    /// This is the internal data of the matrix, it is a fixed size array of the type T
+    /// that is ROWS * COLS in size.
+    /// It is a fixed size array, so that it can be allocated at compile time.
+    /// 
+    /// This field is not exposed to the user, and is only used internally, if exposed to the
+    /// user it's through the getter and setter functions.
     elements: [[T; COLS]; ROWS],
 }
+/// Simpeler alias for a 2x2 matrix
 pub type Matrix2x2<T> = Matrix<T, 2, 2>;
+/// Simpeler alias for a 3x3 matrix
 pub type Matrix3x3<T> = Matrix<T, 3, 3>;
+/// Simpeler alias for a 4x4 matrix
 pub type Matrix4x4<T> = Matrix<T, 4, 4>;
 
 #[allow(dead_code)]
@@ -50,6 +72,9 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         assert_ne!(COLS, 0, "COLS must be greater than 0");
         Matrix { elements: data }
     }
+    // ================================================================
+    // Getters
+    // ================================================================
     /// Get the value of the element at the given row and column
     pub fn get(&self, row: usize, col: usize) -> &T {
         &self.elements[row][col]
@@ -151,6 +176,9 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
     pub fn size(&self) -> (usize, usize) {
         (self.rows(), self.cols())
     }
+    // ================================================================
+    // Setters
+    // ================================================================
     /// Sets the value of a given element in the matrix
     pub fn set(&mut self, row: usize, col: usize, value: T) {
         self.elements[row][col] = value;
@@ -169,7 +197,9 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
     pub fn set_elements(&mut self, data: [[T; COLS]; ROWS]) {
         self.elements = data.clone();
     }
-
+    // ================================================================
+    // Convience functions
+    // ================================================================
     /// Transposes a given matrix, since we can't assume the matrix to be square, this function takes O(n) memory
     /// and takes O(n^2) time to transpose a matrix, if the matrix is square this could be done in O(1) memory and theta(n^2 / 2) time, which is similar but better
     pub fn transpose(&mut self) -> Matrix<T, COLS, ROWS> {
@@ -201,6 +231,9 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         }
         m
     }
+    // ================================================================
+    // Converters
+    // ================================================================
     /// Converts an integer matrix to a float32 matrix
     /// # Example
     /// ```rust
@@ -308,6 +341,9 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         m
     }
 }
+// ================================================================
+// Matrix Operations implementations
+// ================================================================
 impl<T: CompliantNumerical, const DIMENSION: usize> Matrix<T, DIMENSION, DIMENSION> {
     /// Returns the identity matrix
     /// # Example
@@ -684,7 +720,9 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> IndexMut<(usiz
         self.get_mut(index.0, index.1)
     }
 }
-
+// ================================================================
+// Tests
+// ================================================================
 #[cfg(test)]
 mod tests {
     use crate::matrix::*;

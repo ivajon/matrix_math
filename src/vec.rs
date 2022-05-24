@@ -24,7 +24,7 @@
 //! ```
 use crate::traits::{self, CompliantNumerical};
 use std::{
-    ops::{Div, Index, Mul, IndexMut},
+    ops::{Div, Index, IndexMut, Mul},
     usize,
 };
 
@@ -86,6 +86,9 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     pub fn new_from_data(data: [T; COUNT]) -> Vec<T, COUNT> {
         Vec { elements: data }
     }
+    // ================================================================
+    // Getters
+    // ================================================================
     /// Gets the element at the specified index
     /// # Example
     /// ```rust
@@ -126,10 +129,30 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// Never panics
     /// # Safety
     /// It is safe to get the elements of the Vector
-    
+
     pub fn get_elements(&self) -> &[T; COUNT] {
         &self.elements
     }
+    /// Gets the dimension of the Vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let Vec = Vec::< f64, 3 >::new();
+    /// let length = Vec.size();
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to get the size of the Vector
+    /// # Note
+    /// The size of the Vector is always the same as the amount of elements
+    /// in the Vector
+    pub fn size(&self) -> usize {
+        COUNT
+    }
+    // ================================================================
+    // Setters
+    // ================================================================
     /// Sets the element at the specified index
     /// # Example
     /// ```rust
@@ -144,51 +167,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     pub fn set(&mut self, index: usize, value: T) {
         self.elements[index] = value;
     }
-    /// Gets the length of the Vector
-    /// # Example
-    /// ```rust
-    /// use matrs::vec::Vec;
-    /// let Vec = Vec::< f64, 3 >::new();
-    /// let length = Vec.len();
-    /// ```
-    /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to get the length of the Vector
-    /// # Note
-    /// The length of the Vector is always the same as the amount of elements
-    /// in the Vector
-    pub fn len(&self) -> usize {
-        COUNT
-    }
-    /// Convert the Vector to a slice
-    /// # Example
-    /// ```rust
-    /// use matrs::vec::Vec;
-    /// let mut Vec = Vec::< f64, 3 >::new();
-    /// let slice = Vec.iter();
-    /// ```
-    /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to convert the Vector to a slice
-    pub fn iter(&self) -> std::slice::Iter<T> {
-        self.elements.iter()
-    }
-    /// Convert the Vector to a slice
-    /// # Example
-    /// ```rust
-    /// use matrs::vec::Vec;
-    /// let mut Vec = Vec::< f64, 3 >::new();
-    /// let slice = Vec.iter_mut();
-    /// ```
-    /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to convert the Vector to a slice
-    pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
-        self.elements.iter_mut()
-    }
+
     /// Passes each element of the Vector to the function
     pub fn for_each(&self, f: T)
     where
@@ -225,6 +204,9 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
             ret.set(i, self[i].clone() * other[i].clone());
         }
     }
+    // ================================================================
+    // Convenience operators
+    // ================================================================
     /// Divides two vectors element by element, and returns the result in the vector ret
     /// # Example
     /// ```rust
@@ -267,26 +249,6 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     pub fn to_f32(&self, ret: &mut Vec<f32, COUNT>) {
         for i in 0..COUNT {
             ret.set(i, self[i].clone().into_f32());
-        }
-    }
-    /// Converts an integer vector to a f64 vector
-    /// # Example
-    /// ```rust
-    /// use matrs::vec::Vec;
-    /// let mut a = Vec::< i32, 3 >::new();
-    /// let mut b = Vec::< f64, 3 >::new();
-    /// a.to_f64(&mut b);
-    /// ```
-    /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to convert an integer vector to a f64 vector
-    /// # Note
-    /// The length of the Vector is always the same as the amount of elements
-
-    pub fn to_f64(&self, ret: &mut Vec<f64, COUNT>) {
-        for i in 0..COUNT {
-            ret.set(i, self[i].clone().into_f64());
         }
     }
     /// Passes every element of the Vec to a function defined as
@@ -341,8 +303,61 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     pub fn normalize(self) -> Vec<T, COUNT> {
         self / self.length()
     }
-}
+    // ================================================================
+    // Converters
+    // ================================================================
+    /// Convert the Vector to a slice
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// let slice = Vec.iter();
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to convert the Vector to a slice
+    pub fn iter(&self) -> std::slice::Iter<T> {
+        self.elements.iter()
+    }
+    /// Convert the Vector to a slice
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut Vec = Vec::< f64, 3 >::new();
+    /// let slice = Vec.iter_mut();
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to convert the Vector to a slice
+    pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
+        self.elements.iter_mut()
+    }
+    /// Converts an integer vector to a f64 vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut a = Vec::< i32, 3 >::new();
+    /// let mut b = Vec::< f64, 3 >::new();
+    /// a.to_f64(&mut b);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to convert an integer vector to a f64 vector
+    /// # Note
+    /// The length of the Vector is always the same as the amount of elements
 
+    pub fn to_f64(&self, ret: &mut Vec<f64, COUNT>) {
+        for i in 0..COUNT {
+            ret.set(i, self[i].clone().into_f64());
+        }
+    }
+}
+// ================================================================
+// Implementations
+// ================================================================
 // Multiplies a Vector with a scalar
 impl<T: traits::CompliantNumerical, const COUNT: usize> Mul<T> for Vec<T, COUNT> {
     type Output = Vec<T, COUNT>;
@@ -414,7 +429,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Add<Vec<T, COU
     /// let a = Vec::<f32,3>::new_from_data([1.0, 2.0, 3.0]);
     /// let b = Vec::<f32,3>::new_from_data([4.0, 5.0, 6.0]);
     /// let c = a + b;
-    /// assert_eq!(c.len(), 3);
+    /// assert_eq!(c.size(), 3);
     /// assert_eq!(*c.get(0), 5.0);
     /// assert_eq!(*c.get(1), 7.0);
     /// assert_eq!(*c.get(2), 9.0);
@@ -526,6 +541,9 @@ impl<T: traits::CompliantNumerical> Vec3<T> {
     }
 }
 
+// ================================================================
+// Tests
+// ================================================================
 #[cfg(test)]
 mod tests {
     use super::*;
