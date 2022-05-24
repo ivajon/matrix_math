@@ -93,6 +93,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     // ================================================================
     // Getters
     // ================================================================
+
     /// Gets the element at the specified index
     /// # Example
     /// ```rust
@@ -359,6 +360,147 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
         }
     }
 }
+
+impl<T: CompliantNumerical> Vector<T, 2_usize> {
+    /// Gets the first element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,2>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// let a = Vec.x();
+    /// assert_eq!(a, 1.0);
+    /// ```
+    pub fn x(&self) -> T {
+        self[0].clone()
+    }
+    /// Gets the second element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,2>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// let a = Vec.y();
+    /// assert_eq!(a, 2.0);
+    /// ```
+    pub fn y(&self) -> T {
+        self[1].clone()
+    }
+    /// Sets the first element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,2>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// assert_eq!(Vec.xy(), (1.0, 2.0));
+    /// ```
+    ///
+    pub fn xy(&self) -> (T, T) {
+        (self[0].clone(), self[1].clone())
+    }
+}
+
+impl<T: CompliantNumerical> Vector<T, 3_usize> {
+    /// Gets the first element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// let a = Vec.x();
+    /// assert_eq!(a, 1.0);
+    /// ```
+    pub fn x(&self) -> T {
+        self[0].clone()
+    }
+    /// Gets the second element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// let a = Vec.y();
+    /// assert_eq!(a, 2.0);
+    /// ```
+    pub fn y(&self) -> T {
+        self[1].clone()
+    }
+    /// Gets the third element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// let a = Vec.z();
+    /// assert_eq!(a, 3.0);
+    /// ```
+    pub fn z(&self) -> T {
+        self[2].clone()
+    }
+    /// Gets the first and second element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// assert_eq!(Vec.xy(), (1.0, 2.0));
+    /// ```
+    pub fn xy(&self) -> (T, T) {
+        (self[0].clone(), self[1].clone())
+    }
+    /// Gets the first and third element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// assert_eq!(Vec.xz(), (1.0, 3.0));
+    /// ```
+    ///  
+    pub fn xz(&self) -> (T, T) {
+        (self[0].clone(), self[2].clone())
+    }
+    /// Gets the second and third element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// assert_eq!(Vec.yz(), (2.0, 3.0));
+    /// ```
+    pub fn yz(&self) -> (T, T) {
+        (self[1].clone(), self[2].clone())
+    }
+    /// Gets the first, second and third element of the vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64,3>::new();
+    /// Vec.set(0, 1.0);
+    /// Vec.set(1, 2.0);
+    /// Vec.set(2, 3.0);
+    /// assert_eq!(Vec.xyz(), (1.0, 2.0, 3.0));
+    /// ```
+    pub fn xyz(&self) -> (T, T, T) {
+        (self[0].clone(), self[1].clone(), self[2].clone())
+    }
+}
+
 // ================================================================
 // Implementations
 // ================================================================
