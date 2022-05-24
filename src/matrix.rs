@@ -16,12 +16,15 @@
 //! let m2 = Matrix::<f32, 2, 2>::new();
 //! let m3 = m1 + m2;
 //! ```
+//! # Notes
+//! This generic uses unwrap, this should not be done since we can miss errors.
+//! # TODO
+//! Remove the unwrap
+use crate::traits::{self, CompliantNumerical};
 use std::{
     ops::{self, Index, IndexMut},
     usize,
 };
-
-use crate::traits::{self, CompliantNumerical};
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// # Matrix
@@ -37,11 +40,11 @@ use crate::traits::{self, CompliantNumerical};
 /// let m3 = m1 * m2;
 /// ```
 ///
-pub struct Matrix<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> {
+pub struct Matrix<T: CompliantNumerical, const ROWS: usize, const COLS: usize> {
     /// This is the internal data of the matrix, it is a fixed size array of the type T
     /// that is ROWS * COLS in size.
     /// It is a fixed size array, so that it can be allocated at compile time.
-    /// 
+    ///
     /// This field is not exposed to the user, and is only used internally, if exposed to the
     /// user it's through the getter and setter functions.
     elements: [[T; COLS]; ROWS],
@@ -54,7 +57,7 @@ pub type Matrix3x3<T> = Matrix<T, 3, 3>;
 pub type Matrix4x4<T> = Matrix<T, 4, 4>;
 
 #[allow(dead_code)]
-impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> {
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> {
     /// Creates a new matrix of the specified size
     pub fn new() -> Matrix<T, ROWS, COLS> {
         assert_ne!(ROWS, 0, "Rows must be greater than 0");
@@ -251,7 +254,7 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         let mut m = Matrix::<f32, ROWS, COLS>::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                m.set(row, col, self.elements[row][col].into_f32());
+                m.set(row, col, self.elements[row][col].to_f32().unwrap());
             }
         }
         m
@@ -289,7 +292,7 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         let mut m = Matrix::<f64, ROWS, COLS>::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                m.set(row, col, self.elements[row][col].into_f64());
+                m.set(row, col, self.elements[row][col].to_f64().unwrap());
             }
         }
         m
@@ -312,7 +315,7 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         let mut m = Matrix::<i32, ROWS, COLS>::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                m.set(row, col, self.elements[row][col].into_i32());
+                m.set(row, col, self.elements[row][col].to_i32().unwrap());
             }
         }
         m
@@ -335,7 +338,7 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         let mut m = Matrix::<i64, ROWS, COLS>::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                m.set(row, col, self.elements[row][col].into_i64());
+                m.set(row, col, self.elements[row][col].to_i64().unwrap());
             }
         }
         m
@@ -356,7 +359,7 @@ impl<T: CompliantNumerical, const DIMENSION: usize> Matrix<T, DIMENSION, DIMENSI
         assert_ne!(DIMENSION, 0);
         let mut m = Matrix::<T, DIMENSION, DIMENSION>::new();
         for row in 0..DIMENSION {
-            m.set(row, row, T::from_i64(1));
+            m.set(row, row, T::one());
         }
         m
     }

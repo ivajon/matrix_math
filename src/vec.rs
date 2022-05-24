@@ -22,6 +22,10 @@
 //! assert_eq!(*v.get(1), 2.0);
 //! assert_eq!(*v.get(2), 3.0);
 //! ```
+//! # Notes
+//! This generic uses unwrap, this should not be done since we can miss errors.
+//! # TODO
+//! Remove the unwrap
 use crate::traits::{self, CompliantNumerical};
 use std::{
     ops::{Div, Index, IndexMut, Mul},
@@ -248,7 +252,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
 
     pub fn to_f32(&self, ret: &mut Vec<f32, COUNT>) {
         for i in 0..COUNT {
-            ret.set(i, self[i].clone().into_f32());
+            ret.set(i, self[i].clone().to_f32().unwrap());
         }
     }
     /// Passes every element of the Vec to a function defined as
@@ -283,7 +287,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// # Safety
     /// It is safe to calculate the length of a vector
     pub fn length(self) -> f64 {
-        (self * self).into_f64().sqrt()
+        (self * self).to_f64().unwrap().sqrt()
     }
     /// Normalizes a vector in a n dimensional space
     /// # Example
@@ -351,7 +355,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
 
     pub fn to_f64(&self, ret: &mut Vec<f64, COUNT>) {
         for i in 0..COUNT {
-            ret.set(i, self[i].clone().into_f64());
+            ret.set(i, self[i].clone().to_f64().unwrap());
         }
     }
 }
@@ -408,7 +412,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize, TOther: CompliantNumeric
         for i in 0..COUNT {
             ret.set(
                 i,
-                traits::CompliantNumerical::from_f64((self[i].into_f64() / other.into_f64())),
+                T::from((self[i].to_f64().unwrap() / other.to_f64().unwrap())).unwrap(),
             );
         }
         ret
