@@ -62,24 +62,24 @@ use crate::vec::*;
 use std::ops::Mul;
 // Defines a method to transform a vector with a matrix
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Matrix<T, ROWS, COLS>>
-    for Vec<T, ROWS>
+    for Vector<T, ROWS>
 {
-    type Output = Vec<T, ROWS>;
+    type Output = Vector<T, ROWS>;
     /// Defines a method to transform a vector with a matrix
     /// # Example
     /// ```rust
-    /// use matrs::vec::Vec;
+    /// use matrs::vec::Vector;
     /// use matrs::matrix::Matrix;
     /// let m = Matrix::<f32, 2, 2>::new();
-    /// let v = Vec::<f32, 2>::new();
+    /// let v = Vector::<f32, 2>::new();
     /// let v2 = v * m;
     /// ```
     /// # Mathematical equivalent
     ///
     /// let v be a vector and A be a matrix whith compliant dimensions
     /// $$v\cdot A$$
-    fn mul(self, other: Matrix<T, ROWS, COLS>) -> Vec<T, ROWS> {
-        let mut result = Vec::new();
+    fn mul(self, other: Matrix<T, ROWS, COLS>) -> Vector<T, ROWS> {
+        let mut result = Vector::new();
         for row in 0..ROWS {
             let mut sum: T = T::default();
             for col in 0..COLS {
@@ -91,25 +91,25 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Matrix<T, 
     }
 }
 
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Vec<T, COLS>>
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Vector<T, COLS>>
     for Matrix<T, ROWS, COLS>
 {
-    type Output = Vec<T, ROWS>;
+    type Output = Vector<T, ROWS>;
     /// Defines a method to multiply a matrix with a vector
     /// # Example
     /// ```rust
     /// use matrs::matrix::Matrix;
-    /// use matrs::vec::Vec;
+    /// use matrs::vec::Vector;
     /// let m1 = Matrix::<f32, 2, 2>::new();
-    /// let vec = Vec::<f32, 2>::new();
+    /// let vec = Vector::<f32, 2>::new();
     /// let result = m1 * vec;
     /// ```
     /// # Mathematical equivalent
     /// ```latex
     /// A \cdot v
     ///```
-    fn mul(self, other: Vec<T, COLS>) -> Vec<T, ROWS> {
-        let mut result = Vec::new();
+    fn mul(self, other: Vector<T, COLS>) -> Vector<T, ROWS> {
+        let mut result = Vector::new();
         for row in 0..ROWS {
             let mut sum: T = T::default();
             for col in 0..COLS {
@@ -121,13 +121,13 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Vec<T, COL
     }
 }
 
-impl<T: CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// Creates a matrix from a vector
     /// # Example
     /// ```rust
-    /// use matrs::vec::Vec;
+    /// use matrs::vec::Vector;
     /// use matrs::matrix::Matrix;
-    /// let v = Vec::<f32, 2>::new();
+    /// let v = Vector::<f32, 2>::new();
     /// let m = v.to_matrix();
     /// ```
 
@@ -145,12 +145,12 @@ impl<T: CompliantNumerical, const ROWS: usize> Matrix<T, ROWS, 1> {
     /// # Example
     /// ```rust
     /// use matrs::matrix::Matrix;
-    /// use matrs::vec::Vec;
+    /// use matrs::vec::Vector;
     /// let m = Matrix::<f32, 2, 1>::new();
     /// let v = m.row_vec();
     /// ```
-    pub fn row_vec(self) -> Vec<T, ROWS> {
-        let mut result = Vec::new();
+    pub fn row_vec(self) -> Vector<T, ROWS> {
+        let mut result = Vector::new();
         for i in 0..ROWS {
             result.set(i, *self.get(i, 0));
         }
@@ -163,12 +163,12 @@ impl<T: CompliantNumerical, const COLS: usize> Matrix<T, 1, COLS> {
     /// # Example
     /// ```rust
     /// use matrs::matrix::Matrix;
-    /// use matrs::vec::Vec;
+    /// use matrs::vec::Vector;
     /// let m = Matrix::<f32, 1, 2>::new();
     /// let v = m.col_vec();
     /// ```
-    pub fn col_vec(self) -> Vec<T, COLS> {
-        let mut result = Vec::new();
+    pub fn col_vec(self) -> Vector<T, COLS> {
+        let mut result = Vector::new();
         for i in 0..COLS {
             result.set(i, *self.get(0, i));
         }
@@ -180,16 +180,16 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS
     /// # Example
     /// ```rust
     /// use matrs::matrix::Matrix;
-    /// use matrs::vec::Vec;
+    /// use matrs::vec::Vector;
     /// let m = Matrix::<f32, 2, 2>::new();
     /// let v = m.to_array_of_vecs();
     /// ```
 
-    pub fn to_array_of_vecs(self) -> [Vec<T, COLS>; ROWS] {
-        let mut result: [Vec<T, COLS>; ROWS] = [Vec::new(); ROWS];
+    pub fn to_array_of_vecs(self) -> [Vector<T, COLS>; ROWS] {
+        let mut result: [Vector<T, COLS>; ROWS] = [Vector::new(); ROWS];
         let data = self.get_elements();
         for i in 0..ROWS {
-            result[i] = Vec::new_from_data(data[i]);
+            result[i] = Vector::new_from_data(data[i]);
         }
         result
     }

@@ -25,19 +25,19 @@ Read through the [docs](https://ivario123.github.io/matrix_math/) for more infor
 
     // Instantiating without initial values
     let mut M = Matrix::<u32, 2, 2>::new();
-    let mut V = Vec::<u32, 2>::new();
+    let mut V = Vector::<u32, 2>::new();
 
     // Instantiating with a predefined value
     let mut Vals: [i32; 4] = [1, 2, 3, 4];
-    let mut V = Vec::new_from_data(Vals);
+    let mut V = Vector::new_from_data(Vals);
 
     // Instantianting with initial values
     let mut M = Matrix::<u32, 2, 2>::new_from_data([1, 2, 3, 4]);
-    let mut V: Vec<u32, 2> = Vec::new_from_data([1, 2]);
+    let mut V: Vector<u32, 2> = Vector::new_from_data([1, 2]);
 
     // Using predefined initializers
     let mut M: Matrix<u32, 2, 2> = Matrix::identity();
-    let mut V = Vec3::<f32>::new();
+    let mut V = Vector3::<f32>::new();
 
     // Using array like indexing to modify values
     M[(0, 0)] = 5;
