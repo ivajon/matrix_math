@@ -24,7 +24,7 @@
 //! ```
 use crate::traits::{self, CompliantNumerical};
 use std::{
-    ops::{Div, Index, Mul},
+    ops::{Div, Index, Mul, IndexMut},
     usize,
 };
 
@@ -481,6 +481,25 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Index<usize> for Vec<T, 
     }
 }
 
+// Implements mutable indexing
+impl<T: traits::CompliantNumerical, const COUNT: usize> IndexMut<usize> for Vec<T, COUNT> {
+    /// Allows for array like access to a vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut a = Vec::<f32,3>::new_from_data([1.0, 2.0, 3.0]);
+    /// a[0] = 2.0;
+    /// assert_eq!(a[0], 2.0);
+    /// ```
+    /// # Panics
+    /// This function panic if the index is out of bounds
+    /// # Safety
+    /// This function is safe if the index is in bounds
+    fn index_mut(&mut self, index: usize) -> &mut T {
+        assert!(index < COUNT);
+        self.get_mut(index)
+    }
+}
 impl<T: traits::CompliantNumerical> Vec3<T> {
     /// Defines the cross product of 2 vectors
     /// # Example

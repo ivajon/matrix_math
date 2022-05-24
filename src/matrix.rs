@@ -140,6 +140,17 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
     pub fn cols(&self) -> usize {
         COLS
     }
+    /// Returns the size of the matrix
+    /// # Example
+    /// ```rust
+    /// use matrs::matrix::Matrix;
+    /// let m = Matrix::<f32, 2, 2>::new();
+    /// assert_eq!(m.size(), (2, 2));
+    /// ```
+
+    pub fn size(&self) -> (usize, usize) {
+        (self.rows(), self.cols())
+    }
     /// Sets the value of a given element in the matrix
     pub fn set(&mut self, row: usize, col: usize, value: T) {
         self.elements[row][col] = value;
@@ -296,7 +307,6 @@ impl<T: traits::CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix
         }
         m
     }
-
 }
 impl<T: CompliantNumerical, const DIMENSION: usize> Matrix<T, DIMENSION, DIMENSION> {
     /// Returns the identity matrix
