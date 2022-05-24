@@ -1,7 +1,7 @@
 [package]
 author="Ivar Jönsson <@ivario123>"
 name = "matrs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A package for creating and manipulating matrices and vectors"
 license="MIT"
