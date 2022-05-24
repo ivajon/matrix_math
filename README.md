@@ -21,7 +21,7 @@ Matricies and vectors support the basic linear algebra operations.
 Read through the [docs](https://ivario123.github.io/matrix_math/) for more information. Instantiating matricies and vectors is simple and is done with the `new` keyword.
 
 ```rust
-    use matrix_math::*;
+    use matrs::*;
 
     // Instantiating without initial values
     let mut M = Matrix::<u32, 2, 2>::new();
