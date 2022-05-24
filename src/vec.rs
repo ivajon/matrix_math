@@ -66,6 +66,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// # Safety
     /// It is safe to create a new Vector
     pub fn new() -> Vec<T, COUNT> {
+        assert_ne!(COUNT, 0, "COUNT must be greater than 0");
         let elements = [T::default(); COUNT];
         Vec { elements }
     }
@@ -113,6 +114,21 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vec<T, COUNT> {
     /// It is safe if the index is within the bounds of the Vector
     pub fn get_mut(&mut self, index: usize) -> &mut T {
         &mut self.elements[index]
+    }
+    /// Gets the entire Vector elements as arr
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let Vec = Vec::< f64, 3 >::new();
+    /// let arr = Vec.get_elements();
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to get the elements of the Vector
+    
+    pub fn get_elements(&self) -> &[T; COUNT] {
+        &self.elements
     }
     /// Sets the element at the specified index
     /// # Example
@@ -338,6 +354,27 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Mul<T> for Vec<T, COUNT>
         ret
     }
 }
+// Mul assign a Vector with a scalar
+impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::MulAssign<T> for Vec<T, COUNT> {
+    ///Implements the *= operator
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let mut a = Vec::< f64, 3 >::new();
+    /// a.set(0, 1.0);
+    /// a.set(1, 2.0);
+    /// a.set(2, 3.0);
+    /// a *= 2.0;
+    /// assert_eq!(a[0], 2.0);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to multiply a vector by a scalar
+    fn mul_assign(&mut self, other: T) {
+        self.elements = (*self * other).get_elements().clone();
+    }
+}
 // Divides a Vector with a scalar
 impl<T: traits::CompliantNumerical, const COUNT: usize, TOther: CompliantNumerical> Div<TOther>
     for Vec<T, COUNT>
@@ -423,21 +460,21 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Mul<Vec<T, COU
     }
 }
 
-/// Allows for array like access to a vector
-/// # Example
-/// ```rust
-/// use matrs::vec::Vec;
-/// let a = Vec::<f32,3>::new_from_data([1.0, 2.0, 3.0]);
-/// assert_eq!(a[0], 1.0);
-/// assert_eq!(a[1], 2.0);
-/// assert_eq!(a[2], 3.0);
-/// ```
-/// # Panics
-/// This function panic if the index is out of bounds
-/// # Safety
-/// This function is safe if the index is in bounds
 impl<T: traits::CompliantNumerical, const COUNT: usize> Index<usize> for Vec<T, COUNT> {
     type Output = T;
+    /// Allows for array like access to a vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// let a = Vec::<f32,3>::new_from_data([1.0, 2.0, 3.0]);
+    /// assert_eq!(a[0], 1.0);
+    /// assert_eq!(a[1], 2.0);
+    /// assert_eq!(a[2], 3.0);
+    /// ```
+    /// # Panics
+    /// This function panic if the index is out of bounds
+    /// # Safety
+    /// This function is safe if the index is in bounds
     fn index(&self, index: usize) -> &T {
         assert!(index < COUNT);
         &self.get(index)

@@ -1,12 +1,13 @@
 [package]
-author="Ivar Jönsson"
+author="Ivar Jönsson <@ivario123>"
 name = "matrs"
 version = "0.1.0"
 edition = "2021"
+description = "A package for creating and manipulating matrices and vectors"
+
+
 [lib]
 name = "matrs"
 path = "src/mod.rs"
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-debug_print = "1.0.0"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

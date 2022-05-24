@@ -31,6 +31,7 @@
 //! This library was written by [@ivario123](Ivar Jönsson)
 pub mod matrix;
 pub mod traits;
+
 pub mod vec;
 
 // Defining some initer operation of matrix and vector objects
@@ -44,6 +45,19 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Matrix<T, 
     for Vec<T, ROWS>
 {
     type Output = Vec<T, ROWS>;
+    /// Defines a method to transform a vector with a matrix
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vec;
+    /// use matrs::matrix::Matrix;
+    /// let m = Matrix::<f32, 2, 2>::new();
+    /// let v = Vec::<f32, 2>::new();
+    /// let v2 = v * m;
+    /// ```
+    /// # Mathematical equivalent
+    /// 
+    /// let v be a vector and A be a matrix whith compliant dimensions
+    /// $$v\cdot A$$
     fn mul(self, other: Matrix<T, ROWS, COLS>) -> Vec<T, ROWS> {
         let mut result = Vec::new();
         for row in 0..ROWS {
@@ -55,4 +69,39 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Matrix<T, 
         }
         result
     }
+}
+
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Vec<T, COLS>>
+    for Matrix<T, ROWS, COLS>
+{
+    type Output = Vec<T, ROWS>;
+    /// Defines a method to multiply a matrix with a vector
+    /// # Example
+    /// ```rust
+    /// use matrs::matrix::Matrix;
+    /// use matrs::vec::Vec;
+    /// let m1 = Matrix::<f32, 2, 2>::new();
+    /// let vec = Vec::<f32, 2>::new();
+    /// let result = m1 * vec;
+    /// ```
+    /// # Mathematical equivalent
+    /// ```latex
+    /// A \cdot v
+    ///```
+    fn mul(self, other: Vec<T, COLS>) -> Vec<T, ROWS> {
+        let mut result = Vec::new();
+        for row in 0..ROWS {
+            let mut sum: T = T::default();
+            for col in 0..COLS {
+                sum = sum + *self.get(row, col) * *other.get(col);
+            }
+            result.set(row, sum);
+        }
+        result
+    }
+}
+
+
+impl<T:CompliantNumerical,const COUNT:usize> Vec<T,COUNT>{
+
 }
