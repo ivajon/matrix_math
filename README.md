@@ -12,7 +12,7 @@ This is my matrix math library, it is at worst linear memory and hopefully const
 Just add this line to your cargo.toml 
 
 ```Toml
-matrs = "0.1.0"
+matrs = "0.1.2"
 ```
 
 ## How it works

@@ -20,11 +20,13 @@
 //! This generic uses unwrap, this should not be done since we can miss errors.
 //! # TODO
 //! Remove the unwrap
+
 use crate::traits::{self, CompliantNumerical};
 use std::{
     ops::{self, Index, IndexMut},
     usize,
 };
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 /// # Matrix
@@ -723,6 +725,7 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> IndexMut<(usiz
         self.get_mut(index.0, index.1)
     }
 }
+
 // ================================================================
 // Tests
 // ================================================================

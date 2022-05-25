@@ -53,6 +53,7 @@ pub mod matrix;
 pub mod traits;
 
 pub mod vec;
+pub mod vector_optimization;
 
 // Defining some initer operation of matrix and vector objects
 
