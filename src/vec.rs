@@ -26,7 +26,7 @@
 //! This generic uses unwrap, this should not be done since we can miss errors.
 //! # TODO
 //! Remove the unwrap
-use crate::matrix::Matrix;
+
 use crate::traits::VectorItterator;
 use crate::CompliantNumerical;
 use crate::VectorTrait;
@@ -866,119 +866,109 @@ mod tests {
         let a = Vector::new_from_data([1.0, 2.0, 3.0]);
         let b = Vector::new_from_data([4.0, 5.0, 6.0]);
         let c = a + b;
-        unsafe {
-            assert_eq!(c[0], 5.0, "Add did not work. Wrong value at index 0 ");
-            assert_eq!(c[1], 7.0, "Add did not work. Wrong value at index 1");
-            assert_eq!(c[2], 9.0, "Add did not work. Wrong value at index 2");
-        }
+        assert_eq!(c[0], 5.0, "Add did not work. Wrong value at index 0 ");
+        assert_eq!(c[1], 7.0, "Add did not work. Wrong value at index 1");
+        assert_eq!(c[2], 9.0, "Add did not work. Wrong value at index 2");
     }
     #[test]
     fn test_vec_sub() {
         let a = Vector::new_from_data([1.0, 2.0, 3.0]);
         let b = Vector::new_from_data([4.0, 5.0, 6.0]);
         let c = a - b;
-        unsafe {
-            assert_eq!(
-                *c.get(0),
-                -3.0,
-                "Sub did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-            assert_eq!(
-                *c.get(1),
-                -3.0,
-                "Sub did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-            assert_eq!(
-                *c.get(2),
-                -3.0,
-                "Sub did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-        }
+        assert_eq!(
+            *c.get(0),
+            -3.0,
+            "Sub did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
+        assert_eq!(
+            *c.get(1),
+            -3.0,
+            "Sub did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
+        assert_eq!(
+            *c.get(2),
+            -3.0,
+            "Sub did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
     }
     #[test]
-    fn test_Vec_mul() {
+    fn test_vec_mul() {
         let a = Vector::<f64, 3>::new_from_data([1.0, 2.0, 3.0]);
         let b = Vector::<f64, 3>::new_from_data([4.0, 5.0, 6.0]);
         let c = a * b;
-        unsafe {
-            assert_eq!(
-                c,
-                4.0 + 10.0 + 18.0,
-                "Mul did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-        }
+        assert_eq!(
+            c,
+            4.0 + 10.0 + 18.0,
+            "Mul did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
     }
     #[test]
-    fn test_Vec_div() {
+    fn test_vec_div() {
         let a = Vector::new_from_data([1.0, 2.0, 3.0]);
         let b = 2.0;
         let c = a / b;
-        unsafe {
-            assert_eq!(
-                *c.get(0),
-                1.0 / 2.0,
-                "Div did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-            assert_eq!(
-                *c.get(1),
-                2.0 / 2.0,
-                "Div did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-            assert_eq!(
-                *c.get(2),
-                3.0 / 2.0,
-                "Div did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-        }
+        assert_eq!(
+            *c.get(0),
+            1.0 / 2.0,
+            "Div did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
+        assert_eq!(
+            *c.get(1),
+            2.0 / 2.0,
+            "Div did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
+        assert_eq!(
+            *c.get(2),
+            3.0 / 2.0,
+            "Div did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
     }
     #[test]
-    fn test_Vec_cross_mult() {
+    fn test_vec_cross_mult() {
         let a: Vector3<f64> = Vector3::<f64>::new_from_data([1.0, 2.0, 3.0]);
         let b: Vector3<f64> = Vector3::<f64>::new_from_data([4.0, 5.0, 6.0]);
         let c = a.cross(b);
-        unsafe {
-            assert_eq!(
-                c[0], -3.0,
-                "Cross mult did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-                a, b, c
-            );
-            assert_eq!(
-                *c.get(1),
-                6.0,
-                "Cross mult did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-            assert_eq!(
-                *c.get(2),
-                -3.0,
-                "Cross mult did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
-                a,
-                b,
-                c
-            );
-        }
+        assert_eq!(
+            c[0], -3.0,
+            "Cross mult did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+            a, b, c
+        );
+        assert_eq!(
+            *c.get(1),
+            6.0,
+            "Cross mult did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
+        assert_eq!(
+            *c.get(2),
+            -3.0,
+            "Cross mult did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
+            a,
+            b,
+            c
+        );
     }
 }
