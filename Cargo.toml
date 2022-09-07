@@ -1,6 +1,7 @@
 [package]
 authors = ["Ivar Jönsson <@ivario123>"]
-categories = ["matrix", "math", "static analysable", "matrix math", "linear algebra", "matrix algebra","nostd","no_std"]
+categories = ["matrix", "matrix math",
+              "linear algebra","nostd","no_std"]
 description = "A package for creating statically sized and typed matrices and vectors"
 documentation = "https://ivario123.github.io/matrix_math/"
 edition = "2021"
