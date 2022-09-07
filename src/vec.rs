@@ -26,11 +26,11 @@
 //! This generic uses unwrap, this should not be done since we can miss errors.
 //! # TODO
 //! Remove the unwrap
-use crate::traits::{self, CompliantNumerical};
-use std::{
-    ops::{Div, Index, IndexMut, Mul},
-    usize,
-};
+use crate::matrix::Matrix;
+use crate::traits::VectorItterator;
+use crate::CompliantNumerical;
+use crate::VectorTrait;
+use core::{ops::*, usize};
 
 /// Type definition for a Vector
 /// It is a fixed size Vector
@@ -49,15 +49,193 @@ use std::{
 /// # Future work
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq)]
-pub struct Vector<T: traits::CompliantNumerical, const COUNT: usize> {
+pub struct Vector<T: CompliantNumerical, const COUNT: usize> {
     elements: [T; COUNT],
 }
 pub type Vector2<T> = Vector<T, 2>;
 pub type Vector3<T> = Vector<T, 3>;
 pub type Vector4<T> = Vector<T, 4>;
+
+impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector<T, COUNT> {
+    /// Creates a new Vector
+    /// It is used to create a new Vector with a user defined amount of elements
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let Vec = Vector::< f64, 3 >::new();
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to create a new Vector
+    fn new() -> Vector<T, COUNT> {
+        let elements = [T::default(); COUNT];
+        Vector { elements }
+    }
+
+    fn new_from_value(val: T) -> Vector<T, COUNT> {
+        Vector {
+            elements: [val; COUNT],
+        }
+    }
+
+    /// Creates a new Vector
+    /// It is used to create a new Vector with a user defined amount of elements
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let data:[f32;3] = [1.0, 2.0, 3.0];
+    /// let Vec = Vector::new_from_data(data);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to create a new Vector
+    fn new_from_data(data: [T; COUNT]) -> Vector<T, COUNT> {
+        Vector { elements: data }
+    }
+    /// Sets the element at the specified index
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut Vec = Vector::< f64, 3 >::new();
+    /// Vec.set(1, 1.0);
+    /// ```
+    /// # Panics
+    /// On index out of bounds
+    /// # Safety
+    /// It is safe if the index is within the bounds of the Vector
+    fn set(&mut self, index: usize, value: T) {
+        self.elements[index] = value;
+    }
+
+    /// Gets a copy of the element at the specified index
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let Vec = Vector::< f64, 3 >::new();
+    /// let element = Vec.get(1);
+    /// ```
+    /// # Panics
+    /// On index out of bounds
+    /// # Safety
+    /// It is safe if the index is within the bounds of the Vector
+    fn get(&self, index: usize) -> T {
+        self.elements[index]
+    }
+
+    /// Gets a copy of the element at the specified index
+    fn get_const<const INDEX: usize>(&self) -> T {
+        self.elements[INDEX]
+    }
+    /// Gets the scalar product of 2 vectors
+    fn dot(&self, other: &Self) -> T {
+        let mut sum: T = T::zero();
+        for i in 0..COUNT {
+            sum += self.elements[i] * other.elements[i];
+        }
+        sum
+    }
+
+    fn magnitude(&self) -> T {
+        let mut sum = T::default();
+        for el in self.iter().into_iter() {
+            sum = sum + *el * *el;
+        }
+        T::sqrt(sum)
+    }
+
+    fn normalize(&mut self) {
+        let magnitude = self.magnitude();
+        for el in self.elements.iter_mut() {
+            *el = (*el) / magnitude;
+        }
+    }
+
+    fn add(&self, other: &Self) -> Self {
+        let mut arr = [T::zero(); COUNT];
+        for index in 0..COUNT {
+            arr[index] = self[index] + other[index];
+        }
+        Vector::new_from_data(arr)
+    }
+
+    fn sub(&self, other: &Self) -> Self {
+        let mut arr = [T::zero(); COUNT];
+        for index in 0..COUNT {
+            arr[index] = self[index] - other[index];
+        }
+        Vector::new_from_data(arr)
+    }
+
+    fn elementwise_mul(&self, other: &Self) -> Self {
+        let mut arr = [T::zero(); COUNT];
+        for index in 0..COUNT {
+            arr[index] = self[index] * other[index];
+        }
+        Vector::new_from_data(arr)
+    }
+
+    fn div(&self, other: &Self) -> Self {
+        let mut arr = [T::zero(); COUNT];
+        for index in 0..COUNT {
+            arr[index] = self[index] / other[index];
+        }
+        Vector::new_from_data(arr)
+    }
+
+    fn add_assign(&mut self, other: &Self) {
+        for index in 0..COUNT {
+            self[index] += other[index];
+        }
+    }
+
+    fn sub_assign(&mut self, other: &Self) {
+        for index in 0..COUNT {
+            self[index] -= other[index];
+        }
+    }
+
+    fn mul_assign(&mut self, other: &Self) {
+        for index in 0..COUNT {
+            self[index] *= other[index];
+        }
+    }
+
+    fn div_assign(&mut self, other: &Self) {
+        for index in 0..COUNT {
+            self[index] /= other[index];
+        }
+    }
+
+    fn iter(&mut self) -> VectorItterator<T, Self, COUNT> {
+        VectorItterator {
+            vec: self,
+            t: core::marker::PhantomData,
+            count: 0,
+        }
+    }
+
+    fn sum(&self) -> T {
+        let mut sum = T::zero();
+        for el in self.iter().into_iter() {
+            sum += *el;
+        }
+        sum
+    }
+
+    fn get_mut(&mut self, index: usize) -> &mut T {
+        &mut self.elements[index]
+    }
+
+    fn get_mut_const<const INDEX: usize>(&mut self) -> &mut T {
+        &mut self.elements[INDEX]
+    }
+}
+
 #[allow(dead_code)]
 // Implements a new method for the generic Vector struct
-impl<T: traits::CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// Creates a new Vector
     /// It is used to create a new Vector with a user defined amount of elements
     /// # Example
@@ -70,7 +248,6 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// # Safety
     /// It is safe to create a new Vector
     pub fn new() -> Vector<T, COUNT> {
-        assert_ne!(COUNT, 0, "COUNT must be greater than 0");
         let elements = [T::default(); COUNT];
         Vector { elements }
     }
@@ -322,7 +499,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// Never panics
     /// # Safety
     /// It is safe to convert the Vector to a slice
-    pub fn iter(&self) -> std::slice::Iter<T> {
+    pub fn iter(&self) -> core::slice::Iter<T> {
         self.elements.iter()
     }
     /// Convert the Vector to a slice
@@ -336,7 +513,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// Never panics
     /// # Safety
     /// It is safe to convert the Vector to a slice
-    pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
+    pub fn iter_mut(&mut self) -> core::slice::IterMut<T> {
         self.elements.iter_mut()
     }
     /// Converts an integer vector to a f64 vector
@@ -505,7 +682,7 @@ impl<T: CompliantNumerical> Vector<T, 3_usize> {
 // Implementations
 // ================================================================
 // Multiplies a Vector with a scalar
-impl<T: traits::CompliantNumerical, const COUNT: usize> Mul<T> for Vector<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Mul<T> for Vector<T, COUNT> {
     type Output = Vector<T, COUNT>;
     fn mul(self, other: T) -> Vector<T, COUNT> {
         let mut ret = Vector::new();
@@ -516,9 +693,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Mul<T> for Vector<T, COU
     }
 }
 // Mul assign a Vector with a scalar
-impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::MulAssign<T>
-    for Vector<T, COUNT>
-{
+impl<T: CompliantNumerical, const COUNT: usize> MulAssign<T> for Vector<T, COUNT> {
     ///Implements the *= operator
     /// # Example
     /// ```rust
@@ -539,7 +714,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::MulAssign<T>
     }
 }
 // Divides a Vector with a scalar
-impl<T: traits::CompliantNumerical, const COUNT: usize, TOther: CompliantNumerical> Div<TOther>
+impl<T: CompliantNumerical, TOther: CompliantNumerical, const COUNT: usize> Div<TOther>
     for Vector<T, COUNT>
 {
     type Output = Vector<T, COUNT>;
@@ -549,14 +724,11 @@ impl<T: traits::CompliantNumerical, const COUNT: usize, TOther: CompliantNumeric
     /// # Safety
     /// This function is unsafe because it can cause undefined behavior, but so is all division
     fn div(self, other: TOther) -> Vector<T, COUNT> {
-        if other == TOther::default() {
-            panic!("Division by 0");
-        }
         let mut ret = Vector::<T, COUNT>::new();
         for i in 0..COUNT {
             ret.set(
                 i,
-                T::from((self[i].to_f64().unwrap() / other.to_f64().unwrap())).unwrap(),
+                T::from(self[i].to_f64().unwrap() / other.to_f64().unwrap()).unwrap(),
             );
         }
         ret
@@ -564,9 +736,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize, TOther: CompliantNumeric
 }
 
 // Implements Vector addition
-impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Add<Vector<T, COUNT>>
-    for Vector<T, COUNT>
-{
+impl<T: CompliantNumerical, const COUNT: usize> Add<Vector<T, COUNT>> for Vector<T, COUNT> {
     type Output = Vector<T, COUNT>;
     /// This function adds two Vectors
     /// Since Vectors are allocated at compile time this implmenetation gauraantees that the
@@ -596,9 +766,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Add<Vector<T, 
 }
 
 // Implements Vector subtraction
-impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Sub<Vector<T, COUNT>>
-    for Vector<T, COUNT>
-{
+impl<T: CompliantNumerical, const COUNT: usize> Sub<Vector<T, COUNT>> for Vector<T, COUNT> {
     type Output = Vector<T, COUNT>;
     fn sub(self, other: Vector<T, COUNT>) -> Vector<T, COUNT> {
         let mut result = Vector::new();
@@ -610,9 +778,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Sub<Vector<T, 
 }
 
 // Implements Vector dotproduct
-impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Mul<Vector<T, COUNT>>
-    for Vector<T, COUNT>
-{
+impl<T: CompliantNumerical, const COUNT: usize> Mul<Vector<T, COUNT>> for Vector<T, COUNT> {
     type Output = T;
     fn mul(self, other: Vector<T, COUNT>) -> T {
         let mut result = T::default();
@@ -623,7 +789,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> std::ops::Mul<Vector<T, 
     }
 }
 
-impl<T: traits::CompliantNumerical, const COUNT: usize> Index<usize> for Vector<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> Index<usize> for Vector<T, COUNT> {
     type Output = T;
     /// Allows for array like access to a vector
     /// # Example
@@ -645,7 +811,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> Index<usize> for Vector<
 }
 
 // Implements mutable indexing
-impl<T: traits::CompliantNumerical, const COUNT: usize> IndexMut<usize> for Vector<T, COUNT> {
+impl<T: CompliantNumerical, const COUNT: usize> IndexMut<usize> for Vector<T, COUNT> {
     /// Allows for array like access to a vector
     /// # Example
     /// ```rust
@@ -663,7 +829,7 @@ impl<T: traits::CompliantNumerical, const COUNT: usize> IndexMut<usize> for Vect
         self.get_mut(index)
     }
 }
-impl<T: traits::CompliantNumerical> Vector3<T> {
+impl<T: CompliantNumerical> Vector3<T> {
     /// Defines the cross product of 2 vectors
     /// # Example
     /// ```rust
@@ -700,109 +866,119 @@ mod tests {
         let a = Vector::new_from_data([1.0, 2.0, 3.0]);
         let b = Vector::new_from_data([4.0, 5.0, 6.0]);
         let c = a + b;
-        assert_eq!(c[0], 5.0, "Add did not work. Wrong value at index 0 ");
-        assert_eq!(c[1], 7.0, "Add did not work. Wrong value at index 1");
-        assert_eq!(c[2], 9.0, "Add did not work. Wrong value at index 2");
+        unsafe {
+            assert_eq!(c[0], 5.0, "Add did not work. Wrong value at index 0 ");
+            assert_eq!(c[1], 7.0, "Add did not work. Wrong value at index 1");
+            assert_eq!(c[2], 9.0, "Add did not work. Wrong value at index 2");
+        }
     }
     #[test]
     fn test_vec_sub() {
         let a = Vector::new_from_data([1.0, 2.0, 3.0]);
         let b = Vector::new_from_data([4.0, 5.0, 6.0]);
         let c = a - b;
-        assert_eq!(
-            *c.get(0),
-            -3.0,
-            "Sub did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
-        assert_eq!(
-            *c.get(1),
-            -3.0,
-            "Sub did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
-        assert_eq!(
-            *c.get(2),
-            -3.0,
-            "Sub did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
+        unsafe {
+            assert_eq!(
+                *c.get(0),
+                -3.0,
+                "Sub did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+            assert_eq!(
+                *c.get(1),
+                -3.0,
+                "Sub did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+            assert_eq!(
+                *c.get(2),
+                -3.0,
+                "Sub did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+        }
     }
     #[test]
     fn test_Vec_mul() {
         let a = Vector::<f64, 3>::new_from_data([1.0, 2.0, 3.0]);
         let b = Vector::<f64, 3>::new_from_data([4.0, 5.0, 6.0]);
         let c = a * b;
-        assert_eq!(
-            c,
-            4.0 + 10.0 + 18.0,
-            "Mul did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
+        unsafe {
+            assert_eq!(
+                c,
+                4.0 + 10.0 + 18.0,
+                "Mul did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+        }
     }
     #[test]
     fn test_Vec_div() {
         let a = Vector::new_from_data([1.0, 2.0, 3.0]);
         let b = 2.0;
         let c = a / b;
-        assert_eq!(
-            *c.get(0),
-            1.0 / 2.0,
-            "Div did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
-        assert_eq!(
-            *c.get(1),
-            2.0 / 2.0,
-            "Div did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
-        assert_eq!(
-            *c.get(2),
-            3.0 / 2.0,
-            "Div did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
+        unsafe {
+            assert_eq!(
+                *c.get(0),
+                1.0 / 2.0,
+                "Div did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+            assert_eq!(
+                *c.get(1),
+                2.0 / 2.0,
+                "Div did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+            assert_eq!(
+                *c.get(2),
+                3.0 / 2.0,
+                "Div did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+        }
     }
     #[test]
     fn test_Vec_cross_mult() {
         let a: Vector3<f64> = Vector3::<f64>::new_from_data([1.0, 2.0, 3.0]);
         let b: Vector3<f64> = Vector3::<f64>::new_from_data([4.0, 5.0, 6.0]);
         let c = a.cross(b);
-        assert_eq!(
-            c[0], -3.0,
-            "Cross mult did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
-            a, b, c
-        );
-        assert_eq!(
-            *c.get(1),
-            6.0,
-            "Cross mult did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
-        assert_eq!(
-            *c.get(2),
-            -3.0,
-            "Cross mult did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
-            a,
-            b,
-            c
-        );
+        unsafe {
+            assert_eq!(
+                c[0], -3.0,
+                "Cross mult did not work. Wrong value at index 0, a:{:?} b:{:?} c:{:?}",
+                a, b, c
+            );
+            assert_eq!(
+                *c.get(1),
+                6.0,
+                "Cross mult did not work. Wrong value at index 1, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+            assert_eq!(
+                *c.get(2),
+                -3.0,
+                "Cross mult did not work. Wrong value at index 2, a:{:?} b:{:?} c:{:?}",
+                a,
+                b,
+                c
+            );
+        }
     }
 }

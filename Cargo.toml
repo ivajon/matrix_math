@@ -1,6 +1,6 @@
 [package]
 authors = ["Ivar Jönsson <@ivario123>"]
-categories = ["matrix", "math", "static analysable", "matrix math", "linear algebra", "matrix algebra"]
+categories = ["matrix", "math", "static analysable", "matrix math", "linear algebra", "matrix algebra","nostd","no_std"]
 description = "A package for creating statically sized and typed matrices and vectors"
 documentation = "https://ivario123.github.io/matrix_math/"
 edition = "2021"
@@ -8,24 +8,11 @@ license = "MIT"
 name = "matrs"
 readme = "README.md"
 repository = "https://github.com/ivario123/matrix_math"
-version = "0.1.2"
-[lib]
-name = "matrs"
-path = "src/mod.rs"
+version = "0.2.0" 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 num = "0.4.0"
 
-# Sets the simd crate to use rustc bootstrap
-[profile.release]
-debug = false
-lto = true
-opt-level = 's'
-rpath = true
-
-[profile.dev]
-debug = true
-lto = false
-opt-level = 3
-rpath = false
+[features]
+experimental = []

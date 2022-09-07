@@ -8,8 +8,10 @@
 //! # Why is this trait needed?
 //! This trait allows the end user to just pass in values of any numerical type, and the library will ensure that
 //! the values are valid for the library.
-//! 
+//!
 
+use core::marker::PhantomData;
+use core::ops::*;
 use num::traits::{Num, NumAssign, NumAssignOps, NumCast, NumOps, One, Zero};
 /// Defines a compliant numerical trait
 /// It is used as a generic to only allow numbers that can be casted to/ from floats
@@ -18,15 +20,216 @@ use num::traits::{Num, NumAssign, NumAssignOps, NumCast, NumOps, One, Zero};
 pub trait CompliantNumerical:
     One + Zero + Num + NumOps + NumAssign + NumAssignOps + Sized + Copy + Clone + NumCast + Default
 {
+    fn sqrt(num: Self) -> Self;
 }
-impl CompliantNumerical for f32 {}
-impl CompliantNumerical for f64 {}
-impl CompliantNumerical for i8 {}
-impl CompliantNumerical for i16 {}
-impl CompliantNumerical for i32 {}
-impl CompliantNumerical for i64 {}
-impl CompliantNumerical for u8 {}
-impl CompliantNumerical for u16 {}
-impl CompliantNumerical for u32 {}
-impl CompliantNumerical for u64 {}
-impl CompliantNumerical for usize {}
+impl CompliantNumerical for f32 {
+    fn sqrt(num: Self) -> Self {
+        num::Float::sqrt(num)
+    }
+}
+impl CompliantNumerical for f64 {
+    fn sqrt(num: Self) -> Self {
+        num::Float::sqrt(num)
+    }
+}
+impl CompliantNumerical for i8 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for i16 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for i32 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for i64 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for u8 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for u16 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for u32 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for u64 {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+impl CompliantNumerical for usize {
+    fn sqrt(num: Self) -> Self {
+        num::integer::sqrt(num)
+    }
+}
+
+pub trait MatrixInterface<T: CompliantNumerical, const ROWS: usize, const COLS: usize>:
+    Add<T>
+    + AddAssign<T>
+    + Mul<T>
+    + MulAssign<T>
+    + Index<(usize, usize)>
+    + IndexMut<(usize, usize)>
+    + Sized
+{
+    /// Creates a new matrix of the specified size
+    fn new() -> Self;
+    /// Creates a new matrix of zeros of the specified size
+    fn zeros() -> Self {
+        Self::new()
+    }
+    /// Instantiantes a new matrix with the given elements
+    fn new_from_data(data: [[T; COLS]; ROWS]) -> Self;
+    /// Get the value of the element at the given row and column
+    fn get(&self, row: usize, col: usize) -> &T;
+    /// Get the mutable value of the element at the given row and column
+    fn get_mut(&mut self, row: usize, col: usize) -> &mut T;
+    /// Returns the number of rows in the matrix
+    #[inline(always)]
+    fn rows(&self) -> usize {
+        ROWS
+    }
+    /// Returns the number of columns in the matrix
+    #[inline(always)]
+    fn cols(&self) -> usize {
+        COLS
+    }
+    /// Returns the size of the matrix
+    fn size(&self) -> (usize, usize) {
+        (self.rows(), self.cols())
+    }
+    // ================================================================
+    // Setters
+    // ================================================================
+    /// Sets the value of a given element in the matrix
+    fn set(&mut self, row: usize, col: usize, value: T);
+
+    /// Sets the entire elements array
+    /// This is useful for when you want to do something with the entire matrix
+    /// without having to use the get and set functions
+    fn set_elements(&mut self, data: [[T; COLS]; ROWS]);
+    // ================================================================
+    // Convience functions
+    // ================================================================
+    type TransposeOutput;
+    /// Transposes a given matrix, since we can't assume the matrix to be square, this function takes O(n) memory
+    /// and takes O(n^2) time to transpose a matrix, if the matrix is square this could be done in O(1) memory and theta(n^2 / 2) time, which is similar but better
+    fn transpose(&mut self) -> Self::TransposeOutput;
+    /// Passes every element of the matrix to a function defined as
+    fn map<F: Fn(T) -> T>(&self, f: F) -> Self;
+    /// Returns the identity matrix
+    fn eye() -> Self {
+        Self::identity()
+    }
+    /// Just an alias for the eye function
+    fn identity() -> Self;
+}
+
+/// Creating an api for vectors, this api includes the general instantiation and
+/// some operations, it's easy to see that cross products are not implemented, that's
+/// the case because it does not really make sense for vectors outside R3
+pub trait VectorTrait<T: CompliantNumerical, const SIZE: usize> {
+    /// Creates a new Vector
+    /// It is used to create a new Vector with a user defined amount of elements
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to create a new Vector
+    fn new() -> Self;
+    /// Creates a new Vector with all elements set to the given value
+    /// # Panics
+    /// Never panics
+    fn new_from_value(val: T) -> Self;
+    /// Creates a new Vector
+    /// It is used to create a new Vector with a user defined amount of elements
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to create a new Vector
+    fn new_from_data(data: [T; SIZE]) -> Self;
+
+    fn set(&mut self, index: usize, value: T);
+    /// Gets the element at the specified index
+    /// # Panics
+    /// On index out of bounds
+    /// # Safety
+    /// It is safe if the index is within the bounds of the Vector
+    fn get(&self, index: usize) -> T;
+    /// Constant access to the vector
+    fn get_const<const INDEX: usize>(&self) -> T;
+    /// Returns a mutable refference to the given index
+    fn get_mut(&mut self, index: usize) -> &mut T;
+    /// Returns a mutable refference to the given index
+    /// using a constant index
+    fn get_mut_const<const INDEX: usize>(&mut self) -> &mut T;
+
+    /// Element wise multiplication, and summarization of the result
+    fn dot(&self, other: &Self) -> T;
+    /// Returns the magnitude of the vector in the
+    /// same dataformat the the vector is represented in
+    fn magnitude(&self) -> T;
+    /// Converts the vector to a length one vector with the same direction
+    fn normalize(&mut self);
+    /// Adds two vectors with one another
+    fn add(&self, other: &Self) -> Self;
+    /// Subtracts to vectors from one another
+    fn sub(&self, other: &Self) -> Self;
+    /// Element wise multiplication
+    fn elementwise_mul(&self, other: &Self) -> Self;
+    /// Element wise division of two vectors
+    fn div(&self, other: &Self) -> Self;
+    /// Adds two vectors and stores the result in self
+    fn add_assign(&mut self, other: &Self);
+    /// Subtracts two vectors and stores the result in self
+    fn sub_assign(&mut self, other: &Self);
+    /// Multiplies two vectors and stores the result in self
+    fn mul_assign(&mut self, other: &Self);
+    /// Divides two vectors and stores the result in self
+    fn div_assign(&mut self, other: &Self);
+    /// Computs the sum of a vector
+    fn sum(&self) -> T;
+
+    fn iter<'a>(&mut self) -> VectorItterator<T, Self, SIZE>
+    where
+        Self: Sized;
+}
+
+pub struct VectorItterator<
+    'a,
+    T: CompliantNumerical,
+    VectorType: VectorTrait<T, COUNT>,
+    const COUNT: usize,
+> {
+    pub(crate) vec: &'a mut VectorType,
+    pub(crate) t: PhantomData<T>,
+    pub(crate) count: usize,
+}
+
+impl<'a, T: CompliantNumerical, VectorType: VectorTrait<T, COUNT>, const COUNT: usize> Iterator
+    for VectorItterator<'a, T, VectorType, COUNT>
+{
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.count < COUNT {
+            self.count += 1;
+            return Some(self.vec.get(self.count - 1));
+        }
+        None
+    }
+}
