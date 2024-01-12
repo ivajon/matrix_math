@@ -2,9 +2,11 @@
 //! is not used with any other types.
 //! # What is this?
 //! This is a trait that is used to ensure that the library is not used with any other types.
+//!
 //! # Future work
 //! This trait is currently in a very early stage of development, I would ideally not use this trait and just set the
 //! trait to be all numbers, but I haven't gotten that to work yet
+//!
 //! # Why is this trait needed?
 //! This trait allows the end user to just pass in values of any numerical type, and the library will ensure that
 //! the values are valid for the library.
@@ -23,13 +25,13 @@ pub trait CompliantNumerical:
     fn sqrt(num: Self) -> Self;
 }
 impl CompliantNumerical for f32 {
-    fn sqrt(num: Self) -> Self {
-        num::Float::sqrt(num)
+    fn sqrt(_num: Self) -> Self {
+        todo!();
     }
 }
 impl CompliantNumerical for f64 {
-    fn sqrt(num: Self) -> Self {
-        num::Float::sqrt(num)
+    fn sqrt(_num: Self) -> Self {
+        todo!()
     }
 }
 impl CompliantNumerical for i8 {
@@ -86,33 +88,44 @@ pub trait MatrixInterface<T: CompliantNumerical, const ROWS: usize, const COLS: 
     + Index<(usize, usize)>
     + IndexMut<(usize, usize)>
     + Sized
+    + From<[[T; COLS]; ROWS]>
+    + Into<[[T; COLS]; ROWS]>
 {
     /// Creates a new matrix of the specified size
     fn new() -> Self;
+
     /// Creates a new matrix of zeros of the specified size
     fn zeros() -> Self {
         Self::new()
     }
+
     /// Instantiantes a new matrix with the given elements
     fn new_from_data(data: [[T; COLS]; ROWS]) -> Self;
+
     /// Get the value of the element at the given row and column
     fn get(&self, row: usize, col: usize) -> &T;
+
     /// Get the mutable value of the element at the given row and column
     fn get_mut(&mut self, row: usize, col: usize) -> &mut T;
+
     /// Returns the number of rows in the matrix
     #[inline(always)]
     fn rows(&self) -> usize {
         ROWS
     }
+
     /// Returns the number of columns in the matrix
     #[inline(always)]
     fn cols(&self) -> usize {
         COLS
     }
+
     /// Returns the size of the matrix
+    #[inline(always)]
     fn size(&self) -> (usize, usize) {
         (self.rows(), self.cols())
     }
+
     // ================================================================
     // Setters
     // ================================================================
@@ -123,19 +136,25 @@ pub trait MatrixInterface<T: CompliantNumerical, const ROWS: usize, const COLS: 
     /// This is useful for when you want to do something with the entire matrix
     /// without having to use the get and set functions
     fn set_elements(&mut self, data: [[T; COLS]; ROWS]);
+
     // ================================================================
     // Convience functions
     // ================================================================
+
     type TransposeOutput;
+
     /// Transposes a given matrix, since we can't assume the matrix to be square, this function takes O(n) memory
     /// and takes O(n^2) time to transpose a matrix, if the matrix is square this could be done in O(1) memory and theta(n^2 / 2) time, which is similar but better
     fn transpose(&mut self) -> Self::TransposeOutput;
+
     /// Passes every element of the matrix to a function defined as
     fn map<F: Fn(T) -> T>(&self, f: F) -> Self;
+
     /// Returns the identity matrix
     fn eye() -> Self {
         Self::identity()
     }
+
     /// Just an alias for the eye function
     fn identity() -> Self;
 }
@@ -146,61 +165,66 @@ pub trait MatrixInterface<T: CompliantNumerical, const ROWS: usize, const COLS: 
 pub trait VectorTrait<T: CompliantNumerical, const SIZE: usize> {
     /// Creates a new Vector
     /// It is used to create a new Vector with a user defined amount of elements
-    /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to create a new Vector
     fn new() -> Self;
+
     /// Creates a new Vector with all elements set to the given value
-    /// # Panics
-    /// Never panics
     fn new_from_value(val: T) -> Self;
+
     /// Creates a new Vector
     /// It is used to create a new Vector with a user defined amount of elements
-    /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to create a new Vector
     fn new_from_data(data: [T; SIZE]) -> Self;
 
     fn set(&mut self, index: usize, value: T);
+
     /// Gets the element at the specified index
     /// # Panics
     /// On index out of bounds
-    /// # Safety
-    /// It is safe if the index is within the bounds of the Vector
     fn get(&self, index: usize) -> T;
+
     /// Constant access to the vector
     fn get_const<const INDEX: usize>(&self) -> T;
+
     /// Returns a mutable refference to the given index
     fn get_mut(&mut self, index: usize) -> &mut T;
+
     /// Returns a mutable refference to the given index
     /// using a constant index
     fn get_mut_const<const INDEX: usize>(&mut self) -> &mut T;
 
     /// Element wise multiplication, and summarization of the result
     fn dot(&self, other: &Self) -> T;
+
     /// Returns the magnitude of the vector in the
     /// same dataformat the the vector is represented in
     fn magnitude(&self) -> T;
+
     /// Converts the vector to a length one vector with the same direction
     fn normalize(&mut self);
+
     /// Adds two vectors with one another
     fn add(&self, other: &Self) -> Self;
+
     /// Subtracts to vectors from one another
     fn sub(&self, other: &Self) -> Self;
+
     /// Element wise multiplication
     fn elementwise_mul(&self, other: &Self) -> Self;
+
     /// Element wise division of two vectors
     fn div(&self, other: &Self) -> Self;
+
     /// Adds two vectors and stores the result in self
     fn add_assign(&mut self, other: &Self);
+
     /// Subtracts two vectors and stores the result in self
     fn sub_assign(&mut self, other: &Self);
+
     /// Multiplies two vectors and stores the result in self
     fn mul_assign(&mut self, other: &Self);
+
     /// Divides two vectors and stores the result in self
     fn div_assign(&mut self, other: &Self);
+
     /// Computs the sum of a vector
     fn sum(&self) -> T;
 

@@ -53,6 +53,12 @@ pub mod vector_matrix;
 #[doc(hidden)]
 pub mod x86_optimization;
 
+pub mod predule {
+    pub use super::matrix::Matrix;
+    pub use super::traits::{MatrixInterface, VectorItterator, VectorTrait};
+    pub use super::vec::Vector;
+}
+
 // Defining some initer operation of matrix and vector objects
 
 use crate::matrix::*;

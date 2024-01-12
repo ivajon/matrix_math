@@ -461,11 +461,9 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// let length = a.length();
     /// ```
     /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to calculate the length of a vector
+    /// Panics if the type cannot be treated as a f64
     pub fn length(self) -> f64 {
-        (self * self).to_f64().unwrap().sqrt()
+        CompliantNumerical::sqrt((self * self).to_f64().unwrap())
     }
     /// Normalizes a vector in a n dimensional space
     /// # Example
@@ -516,6 +514,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     pub fn iter_mut(&mut self) -> core::slice::IterMut<T> {
         self.elements.iter_mut()
     }
+
     /// Converts an integer vector to a f64 vector
     /// # Example
     /// ```rust
@@ -530,7 +529,6 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// It is safe to convert an integer vector to a f64 vector
     /// # Note
     /// The length of the Vector is always the same as the amount of elements
-
     pub fn to_f64(&self, ret: &mut Vector<f64, COUNT>) {
         for i in 0..COUNT {
             ret.set(i, self[i].clone().to_f64().unwrap());

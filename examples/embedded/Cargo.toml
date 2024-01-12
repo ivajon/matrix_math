@@ -1,0 +1,14 @@
+[package]
+authors = ["Ivar Jönsson <ivajns-9@student.ltu.se>"]
+edition = "2021"
+name = "embedded"
+version = "0.1.0"
+
+[dependencies]
+cortex-m = { version = "0.7.6", features = ["inline-asm"] }
+cortex-m-rtic = "1.1.3"
+rtt-target = { version = "0.3.0", features = ["cortex-m"] }
+panic-halt = "0.2.0"
+nrf52840-hal = { version = "0.16.0", features = ["rt"] }
+matrs = {path="../../"}
+

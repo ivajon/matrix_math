@@ -41,6 +41,29 @@ pub type Matrix3x3<T> = Matrix<T, 3, 3>;
 /// Simpeler alias for a 4x4 matrix
 pub type Matrix4x4<T> = Matrix<T, 4, 4>;
 
+// Special case
+impl<T: CompliantNumerical, const COLS: usize> From<[T; COLS]> for Matrix<T, 1, COLS> {
+    fn from(value: [T; COLS]) -> Self {
+        [value].into()
+    }
+}
+
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> From<[[T; COLS]; ROWS]>
+    for Matrix<T, ROWS, COLS>
+{
+    fn from(value: [[T; COLS]; ROWS]) -> Self {
+        Self::new_from_data(value)
+    }
+}
+
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Into<[[T; COLS]; ROWS]>
+    for Matrix<T, ROWS, COLS>
+{
+    fn into(self) -> [[T; COLS]; ROWS] {
+        self.elements
+    }
+}
+
 #[allow(dead_code)]
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> MatrixInterface<T, ROWS, COLS>
     for Matrix<T, ROWS, COLS>
