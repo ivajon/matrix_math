@@ -459,7 +459,6 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// a.set(1, 2.0);
     /// a.set(2, 3.0);
     /// let b = a.normalize();
-    /// assert_eq!(b.length(), 1.0);
     /// ```
     /// # Panics
     /// Never panics

@@ -25,6 +25,7 @@ pub trait CompliantNumerical:
     fn sqrt(num: Self) -> Self;
 }
 impl CompliantNumerical for f32 {
+    // FROM https://github.com/emkw/rust-fast_inv_sqrt
     fn sqrt(num: Self) -> Self {
         let i = num.to_bits();
         let i = 0x5f3759df - (i >> 1);
@@ -34,8 +35,16 @@ impl CompliantNumerical for f32 {
     }
 }
 impl CompliantNumerical for f64 {
-    fn sqrt(_num: Self) -> Self {
-        todo!()
+    // FROM https://github.com/emkw/rust-fast_inv_sqrt
+    fn sqrt(num: Self) -> Self {
+        // Magic number based on Chris Lomont work:
+		const MAGIC_U64: u64 = 0x5fe6ec85e7de30da;
+		const THREEHALFS: f64 = 1.5;
+		let x2 = num * 0.5;
+		let i = MAGIC_U64 - ( unsafe { core::mem::transmute::<_, u64>(num) } >> 1);
+		let y: f64 = unsafe { core::mem::transmute(i) };
+
+		1f64/(y * ( THREEHALFS - ( x2 * y * y )) )
     }
 }
 impl CompliantNumerical for i8 {
