@@ -20,13 +20,17 @@ use num::traits::{Num, NumAssign, NumAssignOps, NumCast, NumOps, One, Zero};
 /// and integers
 /// This trait is used to ensure that the matrix struct can only be used with numbers
 pub trait CompliantNumerical:
-    One + Zero + Num + NumOps + NumAssign + NumAssignOps + Sized + Copy + Clone + NumCast + Default
+    One + Zero + Num + NumOps + NumAssign + NumAssignOps + Sized + Clone   + Default
 {
     fn sqrt(num: Self) -> Self;
 }
 impl CompliantNumerical for f32 {
-    fn sqrt(_num: Self) -> Self {
-        todo!();
+    fn sqrt(num: Self) -> Self {
+        let i = num.to_bits();
+        let i = 0x5f3759df - (i >> 1);
+        let y = f32::from_bits(i);
+
+        1f32/(y * (1.5 - 0.5 * num * y * y))
     }
 }
 impl CompliantNumerical for f64 {

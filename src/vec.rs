@@ -27,6 +27,8 @@
 //! # TODO
 //! Remove the unwrap
 
+use num_traits::NumCast;
+
 use crate::traits::VectorItterator;
 use crate::CompliantNumerical;
 use crate::VectorTrait;
@@ -69,13 +71,13 @@ impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector
     /// # Safety
     /// It is safe to create a new Vector
     fn new() -> Vector<T, COUNT> {
-        let elements = [T::default(); COUNT];
+        let elements = array_init::array_init(|_| T::default());
         Vector { elements }
     }
 
     fn new_from_value(val: T) -> Vector<T, COUNT> {
         Vector {
-            elements: [val; COUNT],
+            elements: array_init::array_init(|_|val.clone()),
         }
     }
 
@@ -121,18 +123,18 @@ impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector
     /// # Safety
     /// It is safe if the index is within the bounds of the Vector
     fn get(&self, index: usize) -> T {
-        self.elements[index]
+        self.elements[index].clone()
     }
 
     /// Gets a copy of the element at the specified index
     fn get_const<const INDEX: usize>(&self) -> T {
-        self.elements[INDEX]
+        self.elements[INDEX].clone()
     }
     /// Gets the scalar product of 2 vectors
     fn dot(&self, other: &Self) -> T {
         let mut sum: T = T::zero();
         for i in 0..COUNT {
-            sum += self.elements[i] * other.elements[i];
+            sum += self.elements[i].clone() * other.elements[i].clone();
         }
         sum
     }
@@ -140,7 +142,7 @@ impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector
     fn magnitude(&self) -> T {
         let mut sum = T::default();
         for el in self.iter().into_iter() {
-            sum = sum + *el * *el;
+            sum = sum + el.clone() * el.clone();
         }
         T::sqrt(sum)
     }
@@ -148,63 +150,63 @@ impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector
     fn normalize(&mut self) {
         let magnitude = self.magnitude();
         for el in self.elements.iter_mut() {
-            *el = (*el) / magnitude;
+            *el = el.clone() / magnitude.clone();
         }
     }
 
     fn add(&self, other: &Self) -> Self {
-        let mut arr = [T::zero(); COUNT];
+        let mut arr = array_init::array_init(|_| T::zero());
         for index in 0..COUNT {
-            arr[index] = self[index] + other[index];
+            arr[index] = self[index].clone() + other[index].clone();
         }
         Vector::new_from_data(arr)
     }
 
     fn sub(&self, other: &Self) -> Self {
-        let mut arr = [T::zero(); COUNT];
+        let mut arr = array_init::array_init(|_| T::zero());
         for index in 0..COUNT {
-            arr[index] = self[index] - other[index];
+            arr[index] = self[index].clone()- other[index].clone();
         }
         Vector::new_from_data(arr)
     }
 
     fn elementwise_mul(&self, other: &Self) -> Self {
-        let mut arr = [T::zero(); COUNT];
+        let mut arr = array_init::array_init(|_| T::zero());
         for index in 0..COUNT {
-            arr[index] = self[index] * other[index];
+            arr[index] = self[index].clone()* other[index].clone();
         }
         Vector::new_from_data(arr)
     }
 
     fn div(&self, other: &Self) -> Self {
-        let mut arr = [T::zero(); COUNT];
+        let mut arr = array_init::array_init(|_| T::zero());
         for index in 0..COUNT {
-            arr[index] = self[index] / other[index];
+            arr[index] = self[index].clone()/ other[index].clone();
         }
         Vector::new_from_data(arr)
     }
 
     fn add_assign(&mut self, other: &Self) {
         for index in 0..COUNT {
-            self[index] += other[index];
+            self[index] += other[index].clone();
         }
     }
 
     fn sub_assign(&mut self, other: &Self) {
         for index in 0..COUNT {
-            self[index] -= other[index];
+            self[index] -= other[index].clone();
         }
     }
 
     fn mul_assign(&mut self, other: &Self) {
         for index in 0..COUNT {
-            self[index] *= other[index];
+            self[index] *= other[index].clone();
         }
     }
 
     fn div_assign(&mut self, other: &Self) {
         for index in 0..COUNT {
-            self[index] /= other[index];
+            self[index] /= other[index].clone();
         }
     }
 
@@ -219,7 +221,7 @@ impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector
     fn sum(&self) -> T {
         let mut sum = T::zero();
         for el in self.iter().into_iter() {
-            sum += *el;
+            sum += el.clone();
         }
         sum
     }
@@ -248,7 +250,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// # Safety
     /// It is safe to create a new Vector
     pub fn new() -> Vector<T, COUNT> {
-        let elements = [T::default(); COUNT];
+        let elements = array_init::array_init(|_|T::default());
         Vector { elements }
     }
 
@@ -356,7 +358,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
         T: Fn(T) -> T,
     {
         for element in self.elements.iter() {
-            f(*element);
+            f(element.clone());
         }
     }
 
@@ -415,24 +417,22 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
             ret.set(i, self[i].clone() / other[i].clone());
         }
     }
-    /// Converts an integer vector to a f32 vector
+    /// Calculates the length of a vector in a n dimensional space
     /// # Example
     /// ```rust
     /// use matrs::vec::Vector;
-    /// let mut a = Vector::< i32, 3 >::new();
-    /// let mut b = Vector::< f32, 3 >::new();
-    /// a.to_f32(&mut b);
+    /// let mut a = Vector::< f64, 3 >::new();
+    /// a.set(0, 1.0);
+    /// a.set(1, 2.0);
+    /// a.set(2, 3.0);
+    /// let length = a.length();
     /// ```
     /// # Panics
-    /// Never panics
-    /// # Safety
-    /// It is safe to convert an integer vector to a f32 vector
-
-    pub fn to_f32(&self, ret: &mut Vector<f32, COUNT>) {
-        for i in 0..COUNT {
-            ret.set(i, self[i].clone().to_f32().unwrap());
-        }
+    /// Panics if the type cannot be treated as a f64
+    pub fn length(self) -> T {
+        CompliantNumerical::sqrt(self.clone() * self.clone())
     }
+
     /// Passes every element of the Vec to a function defined as
     /// ```rust
     /// fn f(x: f64) -> f64 {
@@ -450,21 +450,6 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
         }
         ret
     }
-    /// Calculates the length of a vector in a n dimensional space
-    /// # Example
-    /// ```rust
-    /// use matrs::vec::Vector;
-    /// let mut a = Vector::< f64, 3 >::new();
-    /// a.set(0, 1.0);
-    /// a.set(1, 2.0);
-    /// a.set(2, 3.0);
-    /// let length = a.length();
-    /// ```
-    /// # Panics
-    /// Panics if the type cannot be treated as a f64
-    pub fn length(self) -> f64 {
-        CompliantNumerical::sqrt((self * self).to_f64().unwrap())
-    }
     /// Normalizes a vector in a n dimensional space
     /// # Example
     /// ```rust
@@ -481,7 +466,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// # Safety
     /// It is safe to normalize a vector
     pub fn normalize(self) -> Vector<T, COUNT> {
-        self / self.length()
+        self.clone() / self.clone().length()
     }
     // ================================================================
     // Converters
@@ -513,6 +498,28 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// It is safe to convert the Vector to a slice
     pub fn iter_mut(&mut self) -> core::slice::IterMut<T> {
         self.elements.iter_mut()
+    }
+}
+
+impl<T:CompliantNumerical+NumCast,const COUNT:usize> Vector<T,COUNT>{
+    /// Converts an integer vector to a f32 vector
+    /// # Example
+    /// ```rust
+    /// use matrs::vec::Vector;
+    /// let mut a = Vector::< i32, 3 >::new();
+    /// let mut b = Vector::< f32, 3 >::new();
+    /// a.to_f32(&mut b);
+    /// ```
+    /// # Panics
+    /// Never panics
+    /// # Safety
+    /// It is safe to convert an integer vector to a f32 vector
+
+    pub fn to_f32(&self, ret: &mut Vector<f32, COUNT>) {
+        
+        for i in 0..COUNT {
+            ret.set(i, self[i].clone().to_f32().unwrap());
+        }
     }
 
     /// Converts an integer vector to a f64 vector
@@ -685,7 +692,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Mul<T> for Vector<T, COUNT> {
     fn mul(self, other: T) -> Vector<T, COUNT> {
         let mut ret = Vector::new();
         for i in 0..COUNT {
-            ret.set(i, *self.get(i) * other);
+            ret.set(i, self.get(i).clone() * other.clone());
         }
         ret
     }
@@ -708,11 +715,11 @@ impl<T: CompliantNumerical, const COUNT: usize> MulAssign<T> for Vector<T, COUNT
     /// # Safety
     /// It is safe to multiply a vector by a scalar
     fn mul_assign(&mut self, other: T) {
-        self.elements = (*self * other).get_elements().clone();
+        self.elements = (self.clone() * other.clone()).get_elements().clone();
     }
 }
 // Divides a Vector with a scalar
-impl<T: CompliantNumerical, TOther: CompliantNumerical, const COUNT: usize> Div<TOther>
+impl<T: CompliantNumerical+Div<TOther,Output = T>, TOther: CompliantNumerical, const COUNT: usize> Div<TOther>
     for Vector<T, COUNT>
 {
     type Output = Vector<T, COUNT>;
@@ -726,7 +733,7 @@ impl<T: CompliantNumerical, TOther: CompliantNumerical, const COUNT: usize> Div<
         for i in 0..COUNT {
             ret.set(
                 i,
-                T::from(self[i].to_f64().unwrap() / other.to_f64().unwrap()).unwrap(),
+                T::from(self[i].clone() / other.clone()),
             );
         }
         ret
@@ -734,7 +741,7 @@ impl<T: CompliantNumerical, TOther: CompliantNumerical, const COUNT: usize> Div<
 }
 
 // Implements Vector addition
-impl<T: CompliantNumerical, const COUNT: usize> Add<Vector<T, COUNT>> for Vector<T, COUNT> {
+impl<T: CompliantNumerical+Add<T,Output = T>, const COUNT: usize> Add<Vector<T, COUNT>> for Vector<T, COUNT> {
     type Output = Vector<T, COUNT>;
     /// This function adds two Vectors
     /// Since Vectors are allocated at compile time this implmenetation gauraantees that the
@@ -769,7 +776,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Sub<Vector<T, COUNT>> for Vector
     fn sub(self, other: Vector<T, COUNT>) -> Vector<T, COUNT> {
         let mut result = Vector::new();
         for i in 0..COUNT {
-            result.set(i, self[i] - other[i]);
+            result.set(i, self[i].clone() - other[i].clone());
         }
         result
     }
@@ -781,7 +788,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Mul<Vector<T, COUNT>> for Vector
     fn mul(self, other: Vector<T, COUNT>) -> T {
         let mut result = T::default();
         for i in 0..COUNT {
-            result = result + self[i] * other[i];
+            result = result + self[i].clone() * other[i].clone();
         }
         result
     }
@@ -842,14 +849,14 @@ impl<T: CompliantNumerical> Vector3<T> {
 
     pub fn cross(self, other: Vector3<T>) -> Vector3<T> {
         let data = [
-            self[1] * other[2] - self[2] * other[1],
-            self[2] * other[0] - self[0] * other[2],
-            self[0] * other[1] - self[1] * other[0],
+            self[1].clone() * other[2].clone() - self[2].clone() * other[1].clone(),
+            self[2].clone() * other[0].clone() - self[0].clone() * other[2].clone(),
+            self[0].clone() * other[1].clone() - self[1].clone() * other[0].clone(),
         ];
         Vector3 { elements: data }
     }
     pub fn dot(self, other: Vector3<T>) -> T {
-        self[0] * other[0] + self[1] * other[1] + self[2] * other[2]
+        self[0].clone() * other[0].clone() + self[1].clone()* other[1].clone() + self[2].clone() * other[2].clone()
     }
 }
 

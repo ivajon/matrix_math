@@ -14,16 +14,17 @@
 //! # TODO
 //! Remove the unwrap
 
+pub mod helpers;
+pub use helpers::*;
+
 use crate::traits::{CompliantNumerical, MatrixInterface};
 use core::{ops::*, usize};
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone,  PartialEq)]
 /// # Matrix
 /// This is a generic matrix struct, it is used to represent a matrix of any numeric type,
 /// it is generic in the type of the matrix, and it is generic in the number of rows and columns
 /// of the matrix.
-///
 ///
 pub struct Matrix<T: CompliantNumerical, const ROWS: usize, const COLS: usize> {
     /// This is the internal data of the matrix, it is a fixed size array of the type T
@@ -42,7 +43,8 @@ pub type Matrix3x3<T> = Matrix<T, 3, 3>;
 pub type Matrix4x4<T> = Matrix<T, 4, 4>;
 
 // Special case
-impl<T: CompliantNumerical, const COLS: usize> From<[T; COLS]> for Matrix<T, 1, COLS> {
+impl<T: CompliantNumerical, const COLS: usize> From<[T; COLS]> for Matrix<T, 1, COLS>
+where Self:Clone{
     fn from(value: [T; COLS]) -> Self {
         [value].into()
     }
@@ -50,6 +52,7 @@ impl<T: CompliantNumerical, const COLS: usize> From<[T; COLS]> for Matrix<T, 1, 
 
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> From<[[T; COLS]; ROWS]>
     for Matrix<T, ROWS, COLS>
+    where Self:Clone
 {
     fn from(value: [[T; COLS]; ROWS]) -> Self {
         Self::new_from_data(value)
@@ -64,18 +67,19 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Into<[[T; COLS
     }
 }
 
-#[allow(dead_code)]
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> MatrixInterface<T, ROWS, COLS>
     for Matrix<T, ROWS, COLS>
+    where Self:Clone
 {
     /// Creates a new matrix of the specified size
     fn new() -> Matrix<T, ROWS, COLS> {
-        let elements = [[T::default(); COLS]; ROWS];
+        let elements: [[T; COLS]; ROWS] = array_init::array_init(|_| array_init::array_init(|_| T::default()));
         Matrix { elements }
     }
     /// Instantiantes a new matrix with the given elements
     fn new_from_data(data: [[T; COLS]; ROWS]) -> Matrix<T, ROWS, COLS> {
         Matrix { elements: data }
+         
     }
     // ================================================================
     // Getters
@@ -109,8 +113,8 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> MatrixInterfac
     // ================================================================
     /// Transposes a given matrix, since we can't assume the matrix to be square, this function takes O(n) memory
     /// and takes O(n^2) time to transpose a matrix, if the matrix is square this could be done in O(1) memory and theta(n^2 / 2) time, which is similar but better
-    fn transpose(&mut self) -> Matrix<T, COLS, ROWS> {
-        let mut m = Matrix::<T, COLS, ROWS>::new();
+    fn transpose(&mut self) -> Matrix<T, COLS, ROWS>{
+        let mut m:Matrix<_,COLS,ROWS> = Matrix::<T,COLS,ROWS>::new();
         // Square matrix, so we can just swap the rows and columns
         for row in 0..ROWS {
             for col in 0..COLS {
@@ -153,6 +157,13 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> MatrixInterfac
     type TransposeOutput = Matrix<T, COLS, ROWS>;
 }
 
+impl<T: CompliantNumerical, const N: usize> Matrix<T,N, N> {
+    pub fn determinant(&self) -> T {
+       todo!() 
+    }
+}
+
+
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS> {
     pub fn get_elements(&self) -> [[T; COLS]; ROWS] {
         self.elements.clone()
@@ -178,7 +189,7 @@ impl<T: CompliantNumerical, const DIMENSION: usize> Matrix<T, DIMENSION, DIMENSI
 }
 #[allow(dead_code)]
 /// Defines a add method for the generic matrix struct
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Add<Matrix<T, ROWS, COLS>>
+impl<T: CompliantNumerical+Add<TOther,Output = T>,TOther:CompliantNumerical, const ROWS: usize, const COLS: usize> Add<Matrix<TOther, ROWS, COLS>>
     for Matrix<T, ROWS, COLS>
 {
     type Output = Matrix<T, ROWS, COLS>;
@@ -192,11 +203,11 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Add<Matrix<T, 
     /// This method is O(n^2) time and O(1) memory
     /// # Remarks
     /// This method gaurantees at compile time that the matrices are the same size
-    fn add(self, other: Matrix<T, ROWS, COLS>) -> Matrix<T, ROWS, COLS> {
+    fn add(self, other: Matrix<TOther, ROWS, COLS>) -> Matrix<T, ROWS, COLS> {
         let mut result = Matrix::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                result.set(row, col, *self.get(row, col) + *other.get(row, col));
+                result.set(row, col, self.get(row, col).clone() + other.get(row, col).clone());
             }
         }
         result
@@ -219,7 +230,7 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Add<T> for Mat
         let mut result = Matrix::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                result.set(row, col, *self.get(row, col) + other);
+                result.set(row, col, self.get(row, col).clone()+ other.clone());
             }
         }
         result
@@ -227,7 +238,7 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Add<T> for Mat
 }
 
 // Allows for add assign to be used on a matrix
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> AddAssign<Matrix<T, ROWS, COLS>>
+impl<T: CompliantNumerical+Add<TOther,Output = T>,TOther:CompliantNumerical, const ROWS: usize, const COLS: usize> AddAssign<Matrix<TOther, ROWS, COLS>>
     for Matrix<T, ROWS, COLS>
 {
     /// # What is this?
@@ -240,10 +251,10 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> AddAssign<Matr
     /// This method is O(n^2) time and O(1) memory
     /// # Remarks
     /// This method gaurantees at compile time that the matrices are the same size
-    fn add_assign(&mut self, other: Matrix<T, ROWS, COLS>) {
+    fn add_assign(&mut self, other: Matrix<TOther, ROWS, COLS>) {
         for row in 0..ROWS {
             for col in 0..COLS {
-                self.set(row, col, *self.get(row, col) + *other.get(row, col));
+                self.set(row, col, self.get(row, col).clone() + other.get(row, col).clone());
             }
         }
     }
@@ -252,6 +263,7 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> AddAssign<Matr
 // Allows for add assign to be used on a matrix
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> AddAssign<T>
     for Matrix<T, ROWS, COLS>
+    where Self:Clone
 {
     /// # What is this?
     /// This method adds a scalar to a matrix and stores the result in the first matrix
@@ -264,13 +276,13 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> AddAssign<T>
     /// # Remarks
     /// This method gaurantees at compile time that the matrices are the same size
     fn add_assign(&mut self, other: T) {
-        self.elements = (*self + other).get_elements().clone();
+        self.elements = (self.clone() + other.clone()).get_elements().clone();
     }
 }
 
 #[allow(dead_code)]
 /// Defines a sub method for the generic matrix struct
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Sub<Matrix<T, ROWS, COLS>>
+impl<T: CompliantNumerical+Sub<TOther,Output = T>,TOther:CompliantNumerical, const ROWS: usize, const COLS: usize> Sub<Matrix<TOther, ROWS, COLS>>
     for Matrix<T, ROWS, COLS>
 {
     type Output = Matrix<T, ROWS, COLS>;
@@ -285,18 +297,18 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Sub<Matrix<T, 
     /// # Remarks
     /// This method gaurantees at compile time that the matrices are the same size
 
-    fn sub(self, other: Matrix<T, ROWS, COLS>) -> Matrix<T, ROWS, COLS> {
+    fn sub(self, other: Matrix<TOther, ROWS, COLS>) -> Matrix<T, ROWS, COLS> {
         let mut result = Matrix::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                result.set(row, col, *self.get(row, col) - *other.get(row, col));
+                result.set(row, col, self.get(row, col).clone() - other.get(row, col).clone());
             }
         }
         result
     }
 }
 // Implements sub assign for a matrix and a matrix
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> SubAssign<Matrix<T, ROWS, COLS>>
+impl<T: CompliantNumerical+Sub<TOther,Output = T>,TOther:CompliantNumerical, const ROWS: usize, const COLS: usize> SubAssign<Matrix<TOther, ROWS, COLS>>
     for Matrix<T, ROWS, COLS>
 {
     /// # What is this?
@@ -309,8 +321,8 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> SubAssign<Matr
     /// This method is O(n^2) time and O(1) memory
     /// # Remarks
     /// This method gaurantees at compile time that the matrices are the same size
-    fn sub_assign(&mut self, other: Matrix<T, ROWS, COLS>) {
-        self.elements = (*self - other).elements;
+    fn sub_assign(&mut self, other: Matrix<TOther, ROWS, COLS>) {
+        self.elements = (self.clone()- other).elements;
     }
 }
 // Implements multiplication for a matrix and a scalar
@@ -327,7 +339,8 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<T> for Mat
         let mut result = Matrix::new();
         for row in 0..ROWS {
             for col in 0..COLS {
-                result.set(row, col, *self.get(row, col) * other);
+                // This is horrendous for performance, please fix this.
+                result.set(row, col, self.get(row, col).clone() * other.clone());
             }
         }
         result
@@ -341,17 +354,15 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> MulAssign<T>
     /// This method multiplies a matrix with a scalar
     /// # Panics
     /// This method never panics
-    /// # Safety
-    /// This method is safe
     fn mul_assign(&mut self, other: T) {
-        self.elements = (*self * other).elements;
+        self.elements = (self.clone() * other).elements;
     }
 }
 
 // Multiplying an integer matrix with a float matrix is nonsensical, so it is not implemented
 // If you want to do that first convert the integer matrix to a float matrix or vice versa
-impl<T: CompliantNumerical, const ROWS: usize, const OWN_COLS: usize, const OTHERS_COLS: usize>
-    Mul<Matrix<T, ROWS, OTHERS_COLS>> for Matrix<T, OWN_COLS, ROWS>
+impl<T: CompliantNumerical+Mul<TOther,Output = T>,TOther:CompliantNumerical, const ROWS: usize, const OWN_COLS: usize, const OTHERS_COLS: usize>
+    Mul<Matrix<TOther, ROWS, OTHERS_COLS>> for Matrix<T, OWN_COLS, ROWS>
 {
     type Output = Matrix<T, OWN_COLS, OTHERS_COLS>;
     #[inline(never)]
@@ -361,13 +372,13 @@ impl<T: CompliantNumerical, const ROWS: usize, const OWN_COLS: usize, const OTHE
     /// This implementation gaurantees that the dimensions of the matrices are correct, so that the
     /// multiplication can be done without any errors. This falls directly from the fact
     /// that the matricies are statically sized, so the compiler can check the dimensions
-    fn mul(self, other: Matrix<T, ROWS, OTHERS_COLS>) -> Matrix<T, OWN_COLS, OTHERS_COLS> {
+    fn mul(self, other: Matrix<TOther, ROWS, OTHERS_COLS>) -> Matrix<T, OWN_COLS, OTHERS_COLS> {
         let mut result = Matrix::new();
         for row in 0..OWN_COLS {
             for col in 0..OTHERS_COLS {
                 let mut sum = T::default();
                 for i in 0..ROWS {
-                    sum = sum + *self.get(row, i) * *other.get(i, col);
+                    sum = sum + self.get(row, i).clone()* other.get(i, col).clone();
                 }
                 result.set(row, col, sum);
             }
