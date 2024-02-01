@@ -66,17 +66,21 @@ pub use crate::traits::{CompliantNumerical, MatrixInterface, VectorTrait};
 use crate::vec::*;
 use core::ops::Mul;
 // Defines a method to transform a vector with a matrix
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Matrix<T, ROWS, COLS>>
-    for Vector<T, ROWS>
+impl<
+        T: CompliantNumerical + Mul<TOther, Output = T>,
+        TOther: CompliantNumerical,
+        const ROWS: usize,
+        const COLS: usize,
+    > Mul<Matrix<TOther, ROWS, COLS>> for Vector<T, ROWS>
 {
     type Output = Vector<T, ROWS>;
     /// Defines a method to transform a vector with a matrix
-    fn mul(self, other: Matrix<T, ROWS, COLS>) -> Vector<T, ROWS> {
+    fn mul(self, other: Matrix<TOther, ROWS, COLS>) -> Vector<T, ROWS> {
         let mut result = Vector::new();
         for row in 0..ROWS {
             let mut sum: T = T::default();
             for col in 0..COLS {
-                sum = sum + self.get(row).clone() * other.get(row, col).clone();
+                sum += self.get(row).clone() * other.get(row, col).clone();
             }
             result.set(row, sum);
         }
@@ -84,17 +88,21 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Matrix<T, 
     }
 }
 
-impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Mul<Vector<T, COLS>>
-    for Matrix<T, ROWS, COLS>
+impl<
+        T: CompliantNumerical + Mul<TOther, Output = T>,
+        TOther: CompliantNumerical,
+        const ROWS: usize,
+        const COLS: usize,
+    > Mul<Vector<TOther, COLS>> for Matrix<T, ROWS, COLS>
 {
     type Output = Vector<T, ROWS>;
     /// Defines a method to multiply a matrix with a vector
-    fn mul(self, other: Vector<T, COLS>) -> Vector<T, ROWS> {
+    fn mul(self, other: Vector<TOther, COLS>) -> Vector<T, ROWS> {
         let mut result = Vector::new();
         for row in 0..ROWS {
             let mut sum: T = T::default();
             for col in 0..COLS {
-                sum = sum + self.get(row, col).clone() * other.get(col).clone();
+                sum += self.get(row, col).clone() * other.get(col).clone();
             }
             result.set(row, sum);
         }
@@ -108,8 +116,7 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     pub fn to_matrix(self) -> Matrix<T, COUNT, 1> {
         let mut result = Matrix::new();
         for i in 0..COUNT {
-            result.set(i,0, self.get(i).clone());
-
+            result.set(i, 0, self.get(i).clone());
         }
         result
     }
@@ -120,7 +127,7 @@ impl<T: CompliantNumerical, const ROWS: usize> Matrix<T, ROWS, 1> {
     pub fn row_vec(self) -> Vector<T, ROWS> {
         let mut result = Vector::new();
         for i in 0..ROWS {
-            result.set(i, self.get(i,0).clone());
+            result.set(i, self.get(i, 0).clone());
         }
         result
     }
