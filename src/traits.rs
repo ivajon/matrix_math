@@ -10,28 +10,40 @@
 //! # Why is this trait needed?
 //! This trait allows the end user to just pass in values of any numerical type, and the library will ensure that
 //! the values are valid for the library.
-//!
 
 use core::marker::PhantomData;
 use core::ops::*;
-use num::traits::{Num, NumAssign, NumAssignOps, NumCast, NumOps, One, Zero};
+use num::traits::{Num, NumAssign, NumAssignOps, NumOps, One, Zero};
 /// Defines a compliant numerical trait
 /// It is used as a generic to only allow numbers that can be casted to/ from floats
 /// and integers
 /// This trait is used to ensure that the matrix struct can only be used with numbers
 pub trait CompliantNumerical:
-    One + Zero + Num + NumOps + NumAssign + NumAssignOps + Sized + Copy + Clone + NumCast + Default
+    One + Zero + Num + NumOps + NumAssign + NumAssignOps + Sized + Clone + Default
 {
     fn sqrt(num: Self) -> Self;
 }
 impl CompliantNumerical for f32 {
-    fn sqrt(_num: Self) -> Self {
-        todo!();
+    // FROM https://github.com/emkw/rust-fast_inv_sqrt
+    fn sqrt(num: Self) -> Self {
+        let i = num.to_bits();
+        let i = 0x5f3759df - (i >> 1);
+        let y = f32::from_bits(i);
+
+        1f32 / (y * (1.5 - 0.5 * num * y * y))
     }
 }
 impl CompliantNumerical for f64 {
-    fn sqrt(_num: Self) -> Self {
-        todo!()
+    // FROM https://github.com/emkw/rust-fast_inv_sqrt
+    fn sqrt(num: Self) -> Self {
+        // Magic number based on Chris Lomont work:
+        const MAGIC_U64: u64 = 0x5fe6ec85e7de30da;
+        const THREEHALFS: f64 = 1.5;
+        let x2 = num * 0.5;
+        let i = MAGIC_U64 - (num.to_bits() >> 1);
+        let y: f64 = f64::from_bits(i);
+
+        1f64 / (y * (THREEHALFS - (x2 * y * y)))
     }
 }
 impl CompliantNumerical for i8 {
@@ -228,7 +240,7 @@ pub trait VectorTrait<T: CompliantNumerical, const SIZE: usize> {
     /// Computs the sum of a vector
     fn sum(&self) -> T;
 
-    fn iter<'a>(&mut self) -> VectorItterator<T, Self, SIZE>
+    fn iter(&mut self) -> VectorItterator<T, Self, SIZE>
     where
         Self: Sized;
 }
