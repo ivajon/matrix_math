@@ -1,32 +1,3 @@
-//! A Vector is of n elements, and is stored in a contiguous block of memory.
-//!
-//! # Supported operations:
-//!
-//! * Indexing
-//! * Slicing
-//! * Iteration
-//! * Addition
-//! * Subtraction
-//! * Multiplication
-//! * Division by scalar
-//! * Dot product
-//! * Cross product
-//! # Example
-//! ```rust
-//! use matrs::vec::Vector;
-//! let mut v = Vector::<f32, 3>::new();
-//! v.set(0, 1.0);
-//! v.set(1, 2.0);
-//! v.set(2, 3.0);
-//! assert_eq!(*v.get(0), 1.0);
-//! assert_eq!(*v.get(1), 2.0);
-//! assert_eq!(*v.get(2), 3.0);
-//! ```
-//! # Notes
-//! This generic uses unwrap, this should not be done since we can miss errors.
-//! # TODO
-//! Remove the unwrap
-
 use num_traits::NumCast;
 
 use crate::traits::VectorItterator;
