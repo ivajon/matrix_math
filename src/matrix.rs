@@ -1,7 +1,10 @@
 pub mod helpers;
 pub use helpers::*;
 
-use crate::traits::{CompliantNumerical, MatrixInterface};
+use crate::{
+    traits::{CompliantNumerical, MatrixInterface},
+    Vector,
+};
 use core::{ops::*, usize};
 
 #[derive(Debug, Clone, PartialEq)]
@@ -47,7 +50,22 @@ impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> From<Matrix<T,
         val.elements
     }
 }
-
+impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> Matrix<T, ROWS, COLS>
+where
+    Self: Clone,
+{
+    /// Runs linear regression on the provided data.
+    pub fn linreg(&self, expected: &Vector<T, ROWS>) -> Vector<T, COLS>
+    where
+        T: core::fmt::Debug,
+    {
+        let matr = self.clone();
+        let t = matr.clone().transpose();
+        let lhs = t.clone() * matr;
+        let rhs = (t * expected.clone().to_matrix()).get_col(0);
+        lhs.gauss(&rhs)
+    }
+}
 impl<T: CompliantNumerical, const ROWS: usize, const COLS: usize> MatrixInterface<T, ROWS, COLS>
     for Matrix<T, ROWS, COLS>
 where
@@ -129,6 +147,32 @@ where
             }
         }
         m
+    }
+
+    fn get_col(&self, col: usize) -> crate::Vector<T, ROWS> {
+        let mut ret = Vector::new();
+        for row in 0..ROWS {
+            ret[row] = self.elements[row][col].clone();
+        }
+        ret
+    }
+
+    fn get_row(&self, row: usize) -> Vector<T, COLS> {
+        let mut ret = Vector::new();
+        for col in 0..COLS {
+            ret[row] = self.elements[row][col].clone();
+        }
+        ret
+    }
+    fn set_col(&mut self, col: usize, vals: Vector<T, ROWS>) {
+        for row in 0..ROWS {
+            self.elements[row][col] = vals[row].clone();
+        }
+    }
+    fn set_row(&mut self, row: usize, vals: Vector<T, COLS>) {
+        for col in 0..COLS {
+            self.elements[row][col] = vals[col].clone();
+        }
     }
 
     type TransposeOutput = Matrix<T, COLS, ROWS>;
@@ -349,6 +393,44 @@ mod tests {
     fn test_matrix_new() {
         let m = Matrix::<u32, 1, 1>::new();
         assert_eq!(m.get(0, 0), &0);
+    }
+
+    #[test]
+    fn test_gauss() {
+        let m: Matrix<f32, 3, 3> = Matrix::eye();
+        let o = Vector::new_from_data([1.; 3]);
+        let res = m.gauss(&o);
+        assert!(res.data() == [1., 1., 1.]);
+
+        let m: Matrix<f32, 3, 3> =
+            Matrix::new_from_data([[1., 0., 0.], [0., 2., 0.], [0., 0., 3.]]);
+        let o = Vector::new_from_data([1.; 3]);
+        let res = m.gauss(&o);
+        assert!(res.data() == [1., 1. / 2., 1. / 3.]);
+        let m: Matrix<f32, 3, 3> =
+            Matrix::new_from_data([[1., 0., 0.], [0., 2., 1.], [0., 0., 2.]]);
+        let o = Vector::new_from_data([1.; 3]);
+        let res = m.gauss(&o);
+        assert!(res.data() == [1., 1. / 4., 1. / 2.]);
+    }
+    #[test]
+    fn linreg() {
+        let m: Matrix<f32, 8, 2> = Matrix::new_from_data([
+            [1., 1.],
+            [1.1, 1.],
+            [0.9, 1.],
+            [0.85, 1.],
+            [1., 1.],
+            [1.1, 1.],
+            [0.9, 1.],
+            [0.85, 1.],
+        ]);
+        let o = Vector::new_from_data([1.; 8]);
+        let res = m.linreg(&o);
+        let [k, b] = res.data();
+        for ([x, _], y) in m.elements.iter().zip(o.data()) {
+            assert!(((x * k + b) - y).abs() < 0.2);
+        }
     }
     #[test]
     fn test_matrix_new_from_data() {

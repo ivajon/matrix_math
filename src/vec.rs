@@ -2,6 +2,7 @@ use num_traits::NumCast;
 
 use crate::traits::VectorItterator;
 use crate::CompliantNumerical;
+use crate::MatrixInterface;
 use crate::VectorTrait;
 use core::{ops::*, usize};
 
@@ -53,6 +54,7 @@ impl<T: CompliantNumerical, const COUNT: usize> VectorTrait<T, COUNT> for Vector
     fn new_from_data(data: [T; COUNT]) -> Vector<T, COUNT> {
         Vector { elements: data }
     }
+
     /// Sets the element at the specified index
     /// # Example
     /// ```rust
@@ -342,6 +344,10 @@ impl<T: CompliantNumerical, const COUNT: usize> Vector<T, COUNT> {
     /// It is safe to convert the Vector to a slice
     pub fn iter_mut(&mut self) -> core::slice::IterMut<T> {
         self.elements.iter_mut()
+    }
+
+    pub fn data(self) -> [T; COUNT] {
+        self.elements
     }
 }
 

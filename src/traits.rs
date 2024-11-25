@@ -1,6 +1,8 @@
 use core::marker::PhantomData;
 use core::ops::*;
 use num::traits::{Num, NumAssign, NumAssignOps, NumOps, One, Zero};
+
+use crate::Vector;
 /// Defines a compliant numerical trait
 /// It is used as a generic to only allow numbers that can be casted to/ from floats
 /// and integers
@@ -156,6 +158,75 @@ pub trait MatrixInterface<T: CompliantNumerical, const ROWS: usize, const COLS: 
 
     /// Just an alias for the eye function
     fn identity() -> Self;
+
+    /// Gauss eliminates against the rhs vector.
+    /// This is a bit inefficient.
+    fn gauss(&self, rhs: &Vector<T, ROWS>) -> Vector<T, COLS>
+    where
+        Self: Clone,
+        T: core::fmt::Debug,
+    {
+        let mut intermediate = self.clone();
+        let mut res = rhs.clone();
+        let mut values: Vector<T, COLS> = Vector::new();
+        for col in 0..COLS {
+            let upper_row = self.get_row(col);
+            for row in (col + 1)..ROWS {
+                if *self.get(row, col) == T::default() {
+                    continue;
+                }
+                let upper_factor = self.get(row, col).clone();
+                let lower_factor = self.get(col, col).clone();
+                let upper_row = upper_row.clone() * upper_factor.clone();
+                let lower_row = self.get_row(row) * lower_factor.clone();
+
+                intermediate.set_row(row, lower_row - upper_row);
+
+                res[row] = res[row].clone() * lower_factor - res[col].clone() * upper_factor;
+            }
+        }
+        values[ROWS - 1] = res[0].clone() / intermediate.get(ROWS - 1, COLS - 1).clone();
+        // Assume that it has been reduced in to a stair case shape. This should be the case.
+        for row in (0..(ROWS - 1)).rev() {
+            let mut sub = T::default();
+            // Compute the constants to be subtracted.
+            // axn = k - bxn-1 - cxn-2...
+            for col in row..ROWS {
+                sub += intermediate.get(row, col).clone() * values[col].clone();
+            }
+            let factor = intermediate.get(row, row).clone();
+            values[row] = (res[row].clone() - sub) / factor;
+        }
+
+        values
+    }
+
+    /// Returns the specified row.
+    ///
+    /// ## Panics.
+    ///
+    /// This function panics if the row does not exist.
+    fn get_row(&self, row: usize) -> Vector<T, COLS>;
+    /// Returns the specified col.
+    ///
+    /// ## Panics
+    ///
+    /// This function panics if the column does not exist.
+    fn get_col(&self, col: usize) -> Vector<T, ROWS>;
+
+    /// Sets the Specified row.
+    ///
+    /// ## Panics.
+    ///
+    /// This function panics if the row does not exist.
+    fn set_row(&mut self, row: usize, vals: Vector<T, COLS>);
+
+    /// Sets the specified col.
+    ///
+    /// ## Panics
+    ///
+    /// This function panics if the column does not exist.
+    fn set_col(&mut self, col: usize, vals: Vector<T, ROWS>);
 }
 
 /// Creating an api for vectors, this api includes the general instantiation and
